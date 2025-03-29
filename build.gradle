@@ -7,7 +7,6 @@ group = mod_group
 version = mod_version
 
 repositories {
-    mavenLocal()
     maven { url = 'https://maven.neoforged.net/releases' }
     maven { url = "https://api.modrinth.com/maven" }
     maven { url = 'https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1' }
@@ -54,12 +53,12 @@ ext {
     jar_name_mcnf_versions = "-mc-${minecraft_version}-nf-${neoforge_version}"
 }
 
+minecraft {
+    mappings channel: "${minecraft_channel}", version: "${minecraft_version}"
+}
+
 neoForge {
     version = neoforge_version
-    parchment {
-        minecraftVersion = parchment_minecraft_version
-        mappingsVersion = parchment_mappings_version
-    }
     runs {
         client {
             client()
