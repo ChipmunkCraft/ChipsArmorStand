@@ -1,0 +1,6 @@
+{
+    "gui.chipscurioslight.config.curioItems.name": "Curio Item List",
+    "gui.chipscurioslight.config.curioItems.description": "#List of items to add as curios.",
+    "key.chipscurioslight.open_armor_stand_menu": "Open Armor Stand Menu",
+    "key.categories.chipscurioslight": "Chip's Curios Light"
+  }

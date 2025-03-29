@@ -1,0 +1,198 @@
+plugins {
+    id 'net.neoforged.moddev' version '2.0.78'
+    id 'eclipse'
+}
+
+group = mod_group
+version = mod_version
+
+repositories {
+    mavenLocal()
+    maven { url = 'https://maven.neoforged.net/releases' }
+    maven { url = "https://api.modrinth.com/maven" }
+    maven { url = 'https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1' }
+    maven { url = "https://maven.theillusivec4.top/" }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'src/main/java' // Your mod’s code
+        }
+    }
+    compileOnly {
+        java {
+            srcDirs = ['neoforge-minimal']
+        }
+    }
+}
+dependencies {
+    compileOnly sourceSets.compileOnly.output
+    runtimeOnly("net.neoforged:neoforge:${neoforge_version}") {
+        capabilities {
+            requireCapability('net.neoforged:neoforge') // Force API variant
+        }
+    }
+    implementation "me.djtheredstoner:DevAuth-neoforge:1.2.1"
+    implementation "maven.modrinth:obsidianui:0.2.7+mc1.21-neoforge"
+    implementation files("${System.getProperty('user.home')}/.m2/repository/org/thinkingstudio/ryoamiclights/RyoamicLights-neoforge/${ryoamiclights_version}/RyoamicLights-neoforge-${ryoamiclights_version}.jar")
+    implementation "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+}
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(project.java_target)
+    }
+    withSourcesJar()
+}
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs.add '-parameters'
+    options.encoding = 'UTF-8'
+}
+
+ext {
+    jar_name_start = "${mod_id}-${mod_version}"
+    jar_name_mcnf_versions = "-mc-${minecraft_version}-nf-${neoforge_version}"
+}
+
+neoForge {
+    version = neoforge_version
+    parchment {
+        minecraftVersion = parchment_minecraft_version
+        mappingsVersion = parchment_mappings_version
+    }
+    runs {
+        client {
+            client()
+            jvmArguments = [
+                "-Dfml.modFolders=chipscurioslight%%${buildDir}/classes/java/main;chipscurioslight%%${buildDir}/resources/main",
+                '-Ddevauth.enabled=true',
+                '-Ddevauth.configDir=C:/Users/deoxd/.devauth',
+                '-Ddevauth.account=main'
+            ]
+        }
+        server {
+            server()
+            programArguments.addAll '--nogui'
+            systemProperty 'mixin.env.remapRefMap', 'true'
+            systemProperty 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
+        }
+        data {
+            data()
+            programArguments.addAll '--mod', mod_id, '--all', file('src/generated/resources').absolutePath, file('src/main/resources').absolutePath
+            systemProperty 'mixin.env.remapRefMap', 'true'
+            systemProperty 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
+            
+        }
+    }
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+def archives_name = jar_name_start
+archives_name += jar_name_mcnf_versions
+if (hasProperty('mod_appendix')) {
+    archives_name += "-${mod_appendix}"
+}
+
+base {
+    archivesName = archives_name
+}
+
+tasks.named('jar') {
+    version = ''  // Prevent version suffix
+}
+
+jar {
+    exclude 'net/minecraft/**' // Don’t package Minecraft classes
+}
+
+tasks.named('build') {
+    doFirst { // Before running
+        delete fileTree("${buildDir}/classes/java/main") {
+            include 'net/minecraft/**'
+        }
+    }
+    doLast {
+        copy {
+            from "${buildDir}/libs"
+            into rootProject.file('finalJars')
+            include '*.jar'
+        }
+    }
+}
+
+tasks.named('runClient') {
+    doFirst {
+        delete fileTree('/run/logs') {
+            include '*.gz'
+        }
+    }
+}
+
+tasks.named('eclipse') {
+    doLast {
+        project.delete("${projectDir}/.settings/")
+        delete fileTree('/') {
+            include '.project'
+        }
+    }
+}
+
+neoFormRuntime {
+    useEclipseCompiler = true
+    enableCache = true
+    // verbose = true
+}
+
+// This block of code expands all declared replace properties in the specified resource targets.
+// A missing property will result in an error. Properties are expanded using ${} Groovy notation.
+// When "copyIdeResources" is enabled, this will also run before the game launches in IDE environments.
+// See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
+tasks.withType(ProcessResources).configureEach {
+    var replaceProperties = [
+            minecraft_version       : minecraft_version,
+            minecraft_version_range : minecraft_version_range,
+            neoforge_version        : neoforge_version,
+            neoforge_version_range  : neoforge_version_range,
+            loader_version          : loader_version,
+            mod_id                  : mod_id,
+            mod_name                : mod_name,
+            mod_version             : mod_version,
+            mod_license             : mod_license,
+            mod_authors             : mod_authors,
+            mod_description         : mod_description,
+            mod_display_url         : mod_display_url,
+            mod_issue_tracker_url   : mod_issue_tracker_url,
+            curios_version          : curios_version,
+            ryoamiclights_version   : ryoamiclights_version
+    ]
+    inputs.properties replaceProperties
+    filesMatching(['META-INF/neoforge.mods.toml']) {
+        expand replaceProperties
+    }
+}
+
+tasks.register('compileNeoForgeSources', JavaCompile) {
+    source = sourceSets.compileOnly.java
+    classpath = sourceSets.main.compileClasspath
+    destinationDirectory.set(file("$buildDir/classes/java/compileOnly"))
+    javaCompiler = javaToolchains.compilerFor {
+        languageVersion = JavaLanguageVersion.of(project.java_target) // Java 21
+    }
+}
+
+tasks.named('compileJava') {
+    dependsOn 'compileNeoForgeSources', 'processResources'
+}
+
+// Disable default compileCompileOnlyJava
+tasks.named('compileCompileOnlyJava') {
+    enabled = false // Skip it, we use compileNeoForgeSources
+}
+
+tasks.named('sourcesJar') {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE // Skip duplicates
+}

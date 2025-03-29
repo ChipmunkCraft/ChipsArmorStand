@@ -1,0 +1,36 @@
+# IDE Files
+/.idea/
+*.iml
+/.vscode/
+/.eclipse/
+/.settings/
+.project
+.classpath
+/bin/
+*.code-workspace
+
+# Build Outputs
+/build/
+/dist/
+/out/
+*.jar
+finalJars/
+
+# Gradle
+/.gradle/
+
+# Runtime Files
+/run/
+/logs/
+crash-reports/
+
+/addonexample/.settings/
+/addonexample/bin/
+/addonexample/build/
+
+# Misc
+*.log
+*.tmp
+.DS_Store
+.git/
+Graphics/
