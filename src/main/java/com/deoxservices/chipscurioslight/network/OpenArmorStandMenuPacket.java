@@ -36,7 +36,7 @@ public record OpenArmorStandMenuPacket(int entityId) implements CustomPacketPayl
             ServerPlayer player = (ServerPlayer) ctx.player();
             Entity entity = player.level().getEntity(msg.entityId());
             if (entity instanceof ArmorStand armorStand) {
-                Utils.logMsg("Server received packet, opening menu for armor stand ID: " + msg.entityId(), "info");
+                Utils.logMsg("Server received packet, opening menu for armor stand ID: " + msg.entityId(), "debug");
                 player.openMenu(new MenuProvider() {
                     @Override
                     public Component getDisplayName() {
@@ -45,7 +45,7 @@ public record OpenArmorStandMenuPacket(int entityId) implements CustomPacketPayl
 
                     @Override
                     public AbstractContainerMenu createMenu(int id, Inventory inv, Player p) {
-                        Utils.logMsg("Creating ArmorStandMenu with ID: " + id, "info");
+                        Utils.logMsg("Creating ArmorStandMenu with ID: " + id, "debug");
                         // Write entity ID to buffer for client sync
                         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
                         buf.writeInt(armorStand.getId());
@@ -53,7 +53,7 @@ public record OpenArmorStandMenuPacket(int entityId) implements CustomPacketPayl
                     }
                 });
             } else {
-                Utils.logMsg("Entity ID " + msg.entityId() + " is not an armor stand", "info");
+                Utils.logMsg("Entity ID " + msg.entityId() + " is not an armor stand", "debug");
             }
         });
     }

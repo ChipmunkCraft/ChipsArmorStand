@@ -14,7 +14,7 @@ public class CuriosCompat {
 
     @SubscribeEvent
     public static void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
-        Utils.logMsg("On Register Capabilities fired...", "info");
+        Utils.logMsg("On Register Capabilities fired...", "debug");
         event.registerEntity(
             CuriosCapability.INVENTORY,
             EntityType.ARMOR_STAND,

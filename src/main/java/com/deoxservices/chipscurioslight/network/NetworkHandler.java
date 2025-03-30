@@ -27,6 +27,6 @@ public class NetworkHandler {
             STREAM_CODEC,
             OpenArmorStandMenuPacket::handle
         );
-        Utils.logMsg("Registered network packet handler", "info");
+        Utils.logMsg("Registered network packet handler", "debug");
     }
 }

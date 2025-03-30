@@ -20,6 +20,6 @@ public class ClientProxy {
     @SubscribeEvent
     public static void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
         event.register(OPEN_ARMOR_STAND_MENU);
-        Utils.logMsg("Registered key mapping for Shift + Right Click", "info");
+        Utils.logMsg("Registered key mapping for Shift + Right Click", "debug");
     }
 }

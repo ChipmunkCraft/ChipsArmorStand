@@ -80,7 +80,7 @@ public class DynamicRenderer extends ArmorStandRenderer implements ICurioRendere
         String itemName = item.getDescriptionId().replace("item.", "").replace(".", ":");
         String shortName = itemName.split(":")[2]; // e.g., "lantern" from "minecraft:lantern"
         ResourceLocation jsonLocation = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "models/curios/" + shortName + ".json");
-        Utils.logMsg("Loaded: " + jsonLocation, "info");
+        Utils.logMsg("Loaded: " + jsonLocation, "debug");
 
         try {
             JsonObject json = loadJsonWithParents(jsonLocation);
@@ -93,7 +93,7 @@ public class DynamicRenderer extends ArmorStandRenderer implements ICurioRendere
     private JsonObject loadJsonWithParents(ResourceLocation location) throws Exception {
         var resource = Minecraft.getInstance().getResourceManager().getResource(location).orElse(null);
         if (resource == null) {
-            Utils.logMsg("No custom render JSON found for " + location + ", using defaults", "info");
+            Utils.logMsg("No custom render JSON found for " + location + ", using defaults", "debug");
             return new JsonObject();
         }
         try (InputStreamReader reader = new InputStreamReader(resource.open(), StandardCharsets.UTF_8)) {

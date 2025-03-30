@@ -39,14 +39,14 @@ public class ArmorStandCuriosHandler implements ICuriosItemHandler {
     private final Map<String, ICurioStacksHandler> curioMap = Collections.emptyMap();
 
     static {
-        Utils.logMsg("ArmorStandCuriosHandler class loaded", "info");
+        Utils.logMsg("ArmorStandCuriosHandler class loaded", "debug");
     }
 
     @SubscribeEvent
     public static void onEntityInteractSpecific(PlayerInteractEvent.EntityInteractSpecific event) {
-        Utils.logMsg("EntityInteractSpecific event fired, target: " + event.getTarget().getType(), "info");
+        Utils.logMsg("EntityInteractSpecific event fired, target: " + event.getTarget().getType(), "debug");
         if (event.getTarget().getType() != EntityType.ARMOR_STAND) {
-            Utils.logMsg("Not an armor stand, skipping", "info");
+            Utils.logMsg("Not an armor stand, skipping", "debug");
             return;
         }
 
@@ -56,7 +56,7 @@ public class ArmorStandCuriosHandler implements ICuriosItemHandler {
         //ItemStack heldItem = player.getItemInHand(hand);
 
         if (event.getLevel().isClientSide()) {
-            Utils.logMsg("Client-side interaction, skipping", "info");
+            Utils.logMsg("Client-side interaction, skipping", "debug");
             return;
         }
 
@@ -66,7 +66,7 @@ public class ArmorStandCuriosHandler implements ICuriosItemHandler {
         //Set<String> slotIds = curiosHandler.getCurios().keySet(); // Dynamic slot IDs
         
         /*if (!heldItem.isEmpty()) {
-            Utils.logMsg("Trying to equip item: " + heldItem.getItem().getDescriptionId(), "info");
+            Utils.logMsg("Trying to equip item: " + heldItem.getItem().getDescriptionId(), "debug");
             for (String slot : slotIds) {
                 IDynamicStackHandler stackHandler = curiosHandler.getStacksHandler(slot)
                     .map(ICurioStacksHandler::getStacks)
@@ -78,7 +78,7 @@ public class ArmorStandCuriosHandler implements ICuriosItemHandler {
                             if (stackHandler.getStackInSlot(i).isEmpty()) {
                                 stackHandler.setStackInSlot(i, heldItem.copy());
                                 if (!player.isCreative()) player.setItemInHand(hand, ItemStack.EMPTY);
-                                Utils.logMsg("Equipped " + heldItem.getItem().getDescriptionId() + " to " + slot + " on armor stand", "info");
+                                Utils.logMsg("Equipped " + heldItem.getItem().getDescriptionId() + " to " + slot + " on armor stand", "debug");
                                 event.setCancellationResult(InteractionResult.SUCCESS);
                                 event.setCanceled(true);
                                 return;
@@ -88,7 +88,7 @@ public class ArmorStandCuriosHandler implements ICuriosItemHandler {
                 }
             }
         } else {
-            Utils.logMsg("Trying to unequip item", "info");
+            Utils.logMsg("Trying to unequip item", "debug");
             for (String slot : slotIds) {
                 IDynamicStackHandler stackHandler = curiosHandler.getStacksHandler(slot)
                     .map(ICurioStacksHandler::getStacks)
@@ -99,7 +99,7 @@ public class ArmorStandCuriosHandler implements ICuriosItemHandler {
                         if (!stack.isEmpty()) {
                             player.setItemInHand(hand, stack.copy());
                             stackHandler.setStackInSlot(i, ItemStack.EMPTY);
-                            Utils.logMsg("Unequipped " + stack.getItem().getDescriptionId() + " from " + slot + " on armor stand", "info");
+                            Utils.logMsg("Unequipped " + stack.getItem().getDescriptionId() + " from " + slot + " on armor stand", "debug");
                             event.setCancellationResult(InteractionResult.SUCCESS);
                             event.setCanceled(true);
                             return;

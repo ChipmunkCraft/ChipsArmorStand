@@ -25,24 +25,24 @@ public class RyoamicLightHandler {
 
     // Core handler logic for any LivingEntity
     private static final DynamicLightHandler<LivingEntity> BASE_HANDLER = entity -> {
-        //Utils.logMsg("[ "+entity.getType().getDescriptionId()+" ] Checking entity: " + entity.getType().getDescriptionId(), "info");
+        //Utils.logMsg("[ "+entity.getType().getDescriptionId()+" ] Checking entity: " + entity.getType().getDescriptionId(), "debug");
         int totalLuminance = 0;
         var curiosInventory = CuriosApi.getCuriosInventory(entity);
         if (curiosInventory.isPresent()) {
             ICuriosItemHandler handler = curiosInventory.get();
             Map<String, ICurioStacksHandler> curios = handler.getCurios();
-            //Utils.logMsg("[ "+entity.getType().getDescriptionId()+" ] Entity " + entity.getType().getDescriptionId() + " has " + curios.size() + " Curios slots", "info");
+            //Utils.logMsg("[ "+entity.getType().getDescriptionId()+" ] Entity " + entity.getType().getDescriptionId() + " has " + curios.size() + " Curios slots", "debug");
             for (Map.Entry<String, ICurioStacksHandler> entry : curios.entrySet()) {
                 ICurioStacksHandler stacksHandler = entry.getValue();
-                //Utils.logMsg("[ "+entity.getType().getDescriptionId()+" ] Slot " + entry.getKey() + " has " + stacksHandler.getSlots() + " slots", "info");
+                //Utils.logMsg("[ "+entity.getType().getDescriptionId()+" ] Slot " + entry.getKey() + " has " + stacksHandler.getSlots() + " slots", "debug");
                 for (int i = 0; i < stacksHandler.getSlots(); i++) {
                     ItemStack stack = stacksHandler.getStacks().getStackInSlot(i);
-                    //Utils.logMsg("[ "+entity.getType().getDescriptionId()+" ] Curios itemStack in slot " + entry.getKey() + "[" + i + "] | Stack empty? " + stack.isEmpty(), "info");
+                    //Utils.logMsg("[ "+entity.getType().getDescriptionId()+" ] Curios itemStack in slot " + entry.getKey() + "[" + i + "] | Stack empty? " + stack.isEmpty(), "debug");
                     if (!stack.isEmpty()) {
                         int luminance = ItemLightSources.getLuminance(stack, entity.isUnderWater());
                         if (luminance > 0) {
                             totalLuminance = Math.max(totalLuminance, luminance);
-                            //Utils.logMsg("[ "+entity.getType().getDescriptionId()+" ] Emitting light: " + stack.getItem().getDescriptionId() + ", luminance: " + luminance, "info");
+                            //Utils.logMsg("[ "+entity.getType().getDescriptionId()+" ] Emitting light: " + stack.getItem().getDescriptionId() + ", luminance: " + luminance, "debug");
                         }
                     }
                 }

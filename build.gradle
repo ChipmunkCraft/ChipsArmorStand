@@ -53,12 +53,12 @@ ext {
     jar_name_mcnf_versions = "-mc-${minecraft_version}-nf-${neoforge_version}"
 }
 
-minecraft {
-    mappings channel: "${minecraft_channel}", version: "${minecraft_version}"
-}
-
 neoForge {
     version = neoforge_version
+    parchment {
+        mappingsVersion = parchment_mappings_version
+        minecraftVersion = parchment_minecraft_version
+    }
     runs {
         client {
             client()
@@ -81,6 +81,9 @@ neoForge {
             systemProperty 'mixin.env.remapRefMap', 'true'
             systemProperty 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
             
+        }
+        configureEach {
+            logLevel = org.slf4j.event.Level.DEBUG
         }
     }
     mods {
@@ -127,15 +130,6 @@ tasks.named('runClient') {
     doFirst {
         delete fileTree('/run/logs') {
             include '*.gz'
-        }
-    }
-}
-
-tasks.named('eclipse') {
-    doLast {
-        project.delete("${projectDir}/.settings/")
-        delete fileTree('/') {
-            include '.project'
         }
     }
 }

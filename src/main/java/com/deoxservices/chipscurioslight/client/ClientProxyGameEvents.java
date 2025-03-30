@@ -20,35 +20,35 @@ public class ClientProxyGameEvents {
     @SubscribeEvent
     @SuppressWarnings("null")
     public static void onMouseInput(InputEvent.MouseButton.Pre event) {
-        Utils.logMsg("Mouse button event fired, button: " + event.getButton() + ", modifiers: " + event.getModifiers(), "info");
+        Utils.logMsg("Mouse button event fired, button: " + event.getButton() + ", modifiers: " + event.getModifiers(), "debug");
         Minecraft mc = Minecraft.getInstance();
         boolean isShiftDown = mc.options.keyShift.isDown();
-        Utils.logMsg("Shift key active: " + isShiftDown, "info");
+        Utils.logMsg("Shift key active: " + isShiftDown, "debug");
 
         boolean keybindMatch = ClientProxy.OPEN_ARMOR_STAND_MENU.isActiveAndMatches(InputConstants.getKey(event.getButton(), -1));
-        Utils.logMsg("Keybind isActiveAndMatches: " + keybindMatch + ", expected: Shift + Right Click", "info");
+        Utils.logMsg("Keybind isActiveAndMatches: " + keybindMatch + ", expected: Shift + Right Click", "debug");
 
         if (event.getButton() == InputConstants.MOUSE_BUTTON_RIGHT && isShiftDown) {
-            Utils.logMsg("Manual check: Shift + Right Click detected", "info");
+            Utils.logMsg("Manual check: Shift + Right Click detected", "debug");
             if (mc.player == null || mc.level == null || mc.hitResult == null) {
-                Utils.logMsg("No player, level, or hit result available", "info");
+                Utils.logMsg("No player, level, or hit result available", "debug");
                 return;
             }
 
             if (mc.hitResult.getType() == net.minecraft.world.phys.HitResult.Type.ENTITY) {
                 Entity entity = ((net.minecraft.world.phys.EntityHitResult) mc.hitResult).getEntity();
                 if (entity instanceof ArmorStand armorStand) {
-                    Utils.logMsg("Hit armor stand, sending packet for ID: " + armorStand.getId(), "info");
+                    Utils.logMsg("Hit armor stand, sending packet for ID: " + armorStand.getId(), "debug");
                     PacketDistributor.sendToServer(new OpenArmorStandMenuPacket(armorStand.getId()));
                     event.setCanceled(true);
                 } else {
-                    Utils.logMsg("Hit entity is not an armor stand: " + entity.getType(), "info");
+                    Utils.logMsg("Hit entity is not an armor stand: " + entity.getType(), "debug");
                 }
             } else {
-                Utils.logMsg("No entity hit with manual check, hit type: " + (mc.hitResult != null ? mc.hitResult.getType() : "null"), "info");
+                Utils.logMsg("No entity hit with manual check, hit type: " + (mc.hitResult != null ? mc.hitResult.getType() : "null"), "debug");
             }
         } else {
-            Utils.logMsg("Keybind check failed: button=" + event.getButton() + ", shift=" + isShiftDown, "info");
+            Utils.logMsg("Keybind check failed: button=" + event.getButton() + ", shift=" + isShiftDown, "debug");
         }
     }
 }
