@@ -1,4 +1,4 @@
-package com.deoxservices.chipscurioslight.server.config;
+package com.deoxservices.chipsarmorstandmenu.server.config;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
 
@@ -21,7 +21,7 @@ public class ServerConfig {
             builder.push("general"); // Start Section
             TIMEOUT_SECONDS = builder
                 .comment("Armor Stand Menu Timeout in seconds. Default: 30 seconds")
-                .translation("gui.chipscurioslight.config.TIMEOUT_SECONDS")
+                .translation("gui.chipsarmorstandmenu.config.TIMEOUT_SECONDS")
                 .define("TIMEOUT_SECONDS", 30);
             builder.pop(); // End the section
 

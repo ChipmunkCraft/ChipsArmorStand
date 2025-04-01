@@ -1,4 +1,4 @@
-package com.deoxservices.chipscurioslight.client.config;
+package com.deoxservices.chipsarmorstandmenu.client.config;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.client.settings.KeyModifier;
@@ -26,14 +26,14 @@ public class ClientConfig {
             builder.push("general"); // Start Section
             ARMOR_STAND_MENU_MODIFIER = builder
                 .comment("Modifier key to open the Armor Stand menu with the Use key (Default: Right Click). Default: SHIFT")
-                .translation("gui.chipscurioslight.config.ARMOR_STAND_MENU_MODIFIER")
+                .translation("gui.chipsarmorstandmenu.config.ARMOR_STAND_MENU_MODIFIER")
                 .defineEnum("ARMOR_STAND_MENU_MODIFIER", ModifierKey.SHIFT);
             builder.pop(); // End the section
 
             builder.push("curios"); // Start Section
             CURIOS_ITEMS = builder
             .comment("List of items to add as curios.")
-            .translation("gui.chipscurioslight.config.CURIOS_ITEMS")
+            .translation("gui.chipsarmorstandmenu.config.CURIOS_ITEMS")
             .defineListAllowEmpty("CURIOS_ITEMS", defaultItemsList, () -> "", o -> o instanceof String);
             builder.pop(); // End the section
         }

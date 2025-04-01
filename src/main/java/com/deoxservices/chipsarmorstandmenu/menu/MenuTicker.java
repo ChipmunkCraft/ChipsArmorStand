@@ -1,8 +1,8 @@
-package com.deoxservices.chipscurioslight.menu;
+package com.deoxservices.chipsarmorstandmenu.menu;
 
-import com.deoxservices.chipscurioslight.client.ClientProxyGameEvents;
-import com.deoxservices.chipscurioslight.server.config.ServerConfig;
-import com.deoxservices.chipscurioslight.utils.Constants;
+import com.deoxservices.chipsarmorstandmenu.client.ClientProxyGameEvents;
+import com.deoxservices.chipsarmorstandmenu.server.config.ServerConfig;
+import com.deoxservices.chipsarmorstandmenu.utils.Constants;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;

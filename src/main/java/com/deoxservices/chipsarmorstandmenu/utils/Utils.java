@@ -1,4 +1,4 @@
-package com.deoxservices.chipscurioslight.utils;
+package com.deoxservices.chipsarmorstandmenu.utils;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;

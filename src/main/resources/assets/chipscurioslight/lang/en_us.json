@@ -1,11 +1,11 @@
 {
-  "gui.chipscurioslight.config.ARMOR_STAND_MENU_MODIFIER.name": "ArmorStand Open Menu Use Key Modifier",
-  "gui.chipscurioslight.config.ARMOR_STAND_MENU_MODIFIER.description": "Modifier key to open the Armor Stand menu with the Use key (Default: Right Click). Default: SHIFT",
-  "gui.chipscurioslight.config.TIMEOUT_SECONDS.name": "Armor Stand Menu Timeout",
-  "gui.chipscurioslight.config.TIMEOUT_SECONDS.description": "Armor Stand Menu Timeout in seconds. Default: 30 seconds",
-  "gui.chipscurioslight.config.CURIOS_ITEMS.name": "Curio Item List",
-  "gui.chipscurioslight.config.CURIOS_ITEMS.description": "List of items to add as curios.",
-  "gui.chipscurioslight.show_arms": "Show Arms",
-  "gui.chipscurioslight.show_base": "Show Base",
-  "gui.chipscurioslight.show_stand": "Show Armor Stand"
+  "gui.chipsarmorstandmenu.config.ARMOR_STAND_MENU_MODIFIER.name": "ArmorStand Open Menu Use Key Modifier",
+  "gui.chipsarmorstandmenu.config.ARMOR_STAND_MENU_MODIFIER.description": "Modifier key to open the Armor Stand menu with the Use key (Default: Right Click). Default: SHIFT",
+  "gui.chipsarmorstandmenu.config.TIMEOUT_SECONDS.name": "Armor Stand Menu Timeout",
+  "gui.chipsarmorstandmenu.config.TIMEOUT_SECONDS.description": "Armor Stand Menu Timeout in seconds. Default: 30 seconds",
+  "gui.chipsarmorstandmenu.config.CURIOS_ITEMS.name": "Curio Item List",
+  "gui.chipsarmorstandmenu.config.CURIOS_ITEMS.description": "List of items to add as curios.",
+  "gui.chipsarmorstandmenu.show_arms": "Show Arms",
+  "gui.chipsarmorstandmenu.show_base": "Show Base",
+  "gui.chipsarmorstandmenu.show_stand": "Show Armor Stand"
 }

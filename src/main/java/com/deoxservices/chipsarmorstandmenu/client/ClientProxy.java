@@ -1,9 +1,9 @@
-package com.deoxservices.chipscurioslight.client;
+package com.deoxservices.chipsarmorstandmenu.client;
 
-import com.deoxservices.chipscurioslight.ChipsCuriosLight;
-import com.deoxservices.chipscurioslight.client.screen.ArmorStandScreen;
-import com.deoxservices.chipscurioslight.utils.Constants;
-import com.deoxservices.chipscurioslight.utils.Utils;
+import com.deoxservices.chipsarmorstandmenu.ChipsArmorStandMenu;
+import com.deoxservices.chipsarmorstandmenu.client.screen.ArmorStandScreen;
+import com.deoxservices.chipsarmorstandmenu.utils.Constants;
+import com.deoxservices.chipsarmorstandmenu.utils.Utils;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -14,7 +14,7 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 public class ClientProxy {
     @SubscribeEvent
     public static void onRegisterScreens(RegisterMenuScreensEvent event) {
-        event.register(ChipsCuriosLight.ARMOR_STAND_MENU.get(), ArmorStandScreen::new);
+        event.register(ChipsArmorStandMenu.ARMOR_STAND_MENU.get(), ArmorStandScreen::new);
         Utils.logMsg("Registered ArmorStandScreen for menu type: " + Constants.MOD_ID + ":armor_stand", "debug");
     }
 }

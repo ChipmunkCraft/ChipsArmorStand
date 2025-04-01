@@ -1,7 +1,7 @@
-package com.deoxservices.chipscurioslight.data;
+package com.deoxservices.chipsarmorstandmenu.data;
 
-import com.deoxservices.chipscurioslight.client.ClientProxyGameEvents;
-import com.deoxservices.chipscurioslight.utils.Utils;
+import com.deoxservices.chipsarmorstandmenu.client.ClientProxyGameEvents;
+import com.deoxservices.chipsarmorstandmenu.utils.Utils;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;

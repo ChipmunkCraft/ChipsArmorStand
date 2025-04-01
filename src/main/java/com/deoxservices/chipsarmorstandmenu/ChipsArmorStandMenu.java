@@ -1,21 +1,21 @@
 /**
- * ChipsCuriosLight
+ * ChipsArmorStandMenu
  * 
  * @Created 03/20/2025 21:24
  * @author Chipmunk
  * @Copyright (c) 2025 DeoX Services
  */
-package com.deoxservices.chipscurioslight;
+package com.deoxservices.chipsarmorstandmenu;
 
-import com.deoxservices.chipscurioslight.client.config.ClientConfig;
-import com.deoxservices.chipscurioslight.compat.curios.CuriosCompat;
-import com.deoxservices.chipscurioslight.compat.curios.DynamicRenderer;
-import com.deoxservices.chipscurioslight.compat.ryoamiclights.RyoamicLightHandler;
-import com.deoxservices.chipscurioslight.menu.ArmorStandMenu;
-import com.deoxservices.chipscurioslight.network.NetworkHandler;
-import com.deoxservices.chipscurioslight.server.config.ServerConfig;
-import com.deoxservices.chipscurioslight.utils.Constants;
-import com.deoxservices.chipscurioslight.utils.Utils;
+import com.deoxservices.chipsarmorstandmenu.client.config.ClientConfig;
+import com.deoxservices.chipsarmorstandmenu.compat.curios.CuriosCompat;
+import com.deoxservices.chipsarmorstandmenu.compat.curios.DynamicRenderer;
+import com.deoxservices.chipsarmorstandmenu.compat.ryoamiclights.RyoamicLightHandler;
+import com.deoxservices.chipsarmorstandmenu.menu.ArmorStandMenu;
+import com.deoxservices.chipsarmorstandmenu.network.NetworkHandler;
+import com.deoxservices.chipsarmorstandmenu.server.config.ServerConfig;
+import com.deoxservices.chipsarmorstandmenu.utils.Constants;
+import com.deoxservices.chipsarmorstandmenu.utils.Utils;
 
 import java.util.ArrayList;
 
@@ -37,11 +37,9 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
 
-// TODO: Rename project ChipsArmorStandMenu
-
 @Mod(Constants.MOD_ID)
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, modid = Constants.MOD_ID)
-public class ChipsCuriosLight {
+public class ChipsArmorStandMenu {
     private static final ArrayList<String> ITEMS = new ArrayList<>();
 
     private static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(net.minecraft.core.registries.Registries.MENU, Constants.MOD_ID);
@@ -51,7 +49,7 @@ public class ChipsCuriosLight {
             FeatureFlags.DEFAULT_FLAGS
         ));
 
-    public ChipsCuriosLight(IEventBus modEventBus, ModContainer container) {
+    public ChipsArmorStandMenu(IEventBus modEventBus, ModContainer container) {
         MENUS.register(modEventBus);
         modEventBus.addListener(NetworkHandler::register);
         container.registerConfig(ModConfig.Type.CLIENT, ClientConfig.CONFIG_SPEC);

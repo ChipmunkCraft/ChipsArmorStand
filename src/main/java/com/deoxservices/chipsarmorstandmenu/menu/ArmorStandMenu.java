@@ -1,10 +1,10 @@
-package com.deoxservices.chipscurioslight.menu;
+package com.deoxservices.chipsarmorstandmenu.menu;
 
 import java.util.stream.StreamSupport;
 
-import com.deoxservices.chipscurioslight.ChipsCuriosLight;
-import com.deoxservices.chipscurioslight.client.ClientProxyGameEvents;
-import com.deoxservices.chipscurioslight.utils.Utils;
+import com.deoxservices.chipsarmorstandmenu.ChipsArmorStandMenu;
+import com.deoxservices.chipsarmorstandmenu.client.ClientProxyGameEvents;
+import com.deoxservices.chipsarmorstandmenu.utils.Utils;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
@@ -25,7 +25,7 @@ public class ArmorStandMenu extends AbstractContainerMenu {
     public int ticksSinceInteraction = 0;
 
     public ArmorStandMenu(int id, Inventory playerInv, ArmorStand armorStand, boolean showArms) {
-        super(ChipsCuriosLight.ARMOR_STAND_MENU.get(), id);
+        super(ChipsArmorStandMenu.ARMOR_STAND_MENU.get(), id);
         this.armorStand = armorStand;
         this.showArms = showArms;
         if (armorStand != null) {
@@ -39,7 +39,7 @@ public class ArmorStandMenu extends AbstractContainerMenu {
     }
 
     public ArmorStandMenu(int id, Inventory playerInv, FriendlyByteBuf extraData) {
-        super(ChipsCuriosLight.ARMOR_STAND_MENU.get(), id);
+        super(ChipsArmorStandMenu.ARMOR_STAND_MENU.get(), id);
         this.showArms = extraData.readBoolean();
         int entityId = extraData.readInt();
         this.armorStand = (ArmorStand) playerInv.player.level().getEntity(entityId);

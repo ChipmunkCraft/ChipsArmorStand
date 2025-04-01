@@ -1,7 +1,7 @@
-package com.deoxservices.chipscurioslight.network;
+package com.deoxservices.chipsarmorstandmenu.network;
 
-import com.deoxservices.chipscurioslight.utils.Constants;
-import com.deoxservices.chipscurioslight.utils.Utils;
+import com.deoxservices.chipsarmorstandmenu.utils.Constants;
+import com.deoxservices.chipsarmorstandmenu.utils.Utils;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;

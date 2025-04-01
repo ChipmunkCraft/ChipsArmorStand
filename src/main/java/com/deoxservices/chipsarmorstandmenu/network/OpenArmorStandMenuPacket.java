@@ -1,9 +1,9 @@
-package com.deoxservices.chipscurioslight.network;
+package com.deoxservices.chipsarmorstandmenu.network;
 
-import com.deoxservices.chipscurioslight.client.ClientProxyGameEvents;
-import com.deoxservices.chipscurioslight.menu.ArmorStandMenu;
-import com.deoxservices.chipscurioslight.utils.Constants;
-import com.deoxservices.chipscurioslight.utils.Utils;
+import com.deoxservices.chipsarmorstandmenu.client.ClientProxyGameEvents;
+import com.deoxservices.chipsarmorstandmenu.menu.ArmorStandMenu;
+import com.deoxservices.chipsarmorstandmenu.utils.Constants;
+import com.deoxservices.chipsarmorstandmenu.utils.Utils;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;

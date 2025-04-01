@@ -1,7 +1,7 @@
-package com.deoxservices.chipscurioslight.client.screen;
+package com.deoxservices.chipsarmorstandmenu.client.screen;
 
-import com.deoxservices.chipscurioslight.menu.ArmorStandMenu;
-import com.deoxservices.chipscurioslight.network.ToggleArmorStandPacket;
+import com.deoxservices.chipsarmorstandmenu.menu.ArmorStandMenu;
+import com.deoxservices.chipsarmorstandmenu.network.ToggleArmorStandPacket;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Checkbox;
@@ -13,7 +13,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public class ArmorStandScreen extends AbstractContainerScreen<ArmorStandMenu> {
-    //private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath("chipscurioslight", "textures/gui/armor_stand_menu.png");
+    //private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath("chipsarmorstandmenu", "textures/gui/armor_stand_menu.png");
     private Checkbox showArmsCheckbox;
     private Checkbox showBaseCheckbox;
     private Checkbox showStandCheckbox;
@@ -31,7 +31,7 @@ public class ArmorStandScreen extends AbstractContainerScreen<ArmorStandMenu> {
         int x = (width - imageWidth) / 2;
         int y = (height - imageHeight) / 2;
 
-    showArmsCheckbox = Checkbox.builder(Component.translatable("gui.chipscurioslight.show_arms"), minecraft.font)
+    showArmsCheckbox = Checkbox.builder(Component.translatable("gui.chipsarmorstandmenu.show_arms"), minecraft.font)
         .pos(x + 100, y + 20)
         .maxWidth(60)
         .selected(menu.getShowArms())
@@ -40,7 +40,7 @@ public class ArmorStandScreen extends AbstractContainerScreen<ArmorStandMenu> {
                 PacketDistributor.sendToServer(new ToggleArmorStandPacket(menu.getArmorStand().getId(), "arms", value));
             }}).build();
 
-    showBaseCheckbox = Checkbox.builder(Component.translatable("gui.chipscurioslight.show_base"), minecraft.font)
+    showBaseCheckbox = Checkbox.builder(Component.translatable("gui.chipsarmorstandmenu.show_base"), minecraft.font)
         .pos(x + 100, y + 50)
         .maxWidth(60)
         .selected(menu.getShowBase())
@@ -49,7 +49,7 @@ public class ArmorStandScreen extends AbstractContainerScreen<ArmorStandMenu> {
                 PacketDistributor.sendToServer(new ToggleArmorStandPacket(menu.getArmorStand().getId(), "base", value));
             }}).build();
 
-    showStandCheckbox = Checkbox.builder(Component.translatable("gui.chipscurioslight.show_stand"), minecraft.font)
+    showStandCheckbox = Checkbox.builder(Component.translatable("gui.chipsarmorstandmenu.show_stand"), minecraft.font)
         .pos(x + 100, y + 80)
         .maxWidth(60)
         .selected(menu.getShowStand())

@@ -63,7 +63,7 @@ neoForge {
         client {
             client()
             jvmArguments = [
-                "-Dfml.modFolders=chipscurioslight%%${buildDir}/classes/java/main;chipscurioslight%%${buildDir}/resources/main",
+                "-Dfml.modFolders=chipsarmorstandmenu%%${buildDir}/classes/java/main;chipsarmorstandmenu%%${buildDir}/resources/main",
                 '-Ddevauth.enabled=true',
                 '-Ddevauth.configDir=C:/Users/deoxd/.devauth',
                 '-Ddevauth.account=main'

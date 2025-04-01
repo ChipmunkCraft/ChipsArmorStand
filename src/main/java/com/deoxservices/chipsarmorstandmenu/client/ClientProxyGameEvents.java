@@ -1,15 +1,15 @@
-package com.deoxservices.chipscurioslight.client;
+package com.deoxservices.chipsarmorstandmenu.client;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.deoxservices.chipscurioslight.client.config.ClientConfig;
-import com.deoxservices.chipscurioslight.data.LockSavedData;
-import com.deoxservices.chipscurioslight.network.OpenArmorStandMenuPacket;
-import com.deoxservices.chipscurioslight.utils.Constants;
-import com.deoxservices.chipscurioslight.utils.Utils;
+import com.deoxservices.chipsarmorstandmenu.client.config.ClientConfig;
+import com.deoxservices.chipsarmorstandmenu.data.LockSavedData;
+import com.deoxservices.chipsarmorstandmenu.network.OpenArmorStandMenuPacket;
+import com.deoxservices.chipsarmorstandmenu.utils.Constants;
+import com.deoxservices.chipsarmorstandmenu.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -55,7 +55,7 @@ public class ClientProxyGameEvents {
     }
 
     private static LockSavedData lockData;
-    private static final String NBT_KEY = "ChipsCuriosLightLocks";
+    private static final String NBT_KEY = "ChipsArmorStandMenuLocks";
 
     public static class LockInfo {
         private final UUID ownerUUID;

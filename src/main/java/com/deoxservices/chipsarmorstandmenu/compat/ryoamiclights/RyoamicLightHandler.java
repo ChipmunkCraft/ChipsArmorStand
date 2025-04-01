@@ -1,4 +1,4 @@
-package com.deoxservices.chipscurioslight.compat.ryoamiclights;
+package com.deoxservices.chipsarmorstandmenu.compat.ryoamiclights;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -8,7 +8,7 @@ import org.thinkingstudio.ryoamiclights.api.DynamicLightHandler;
 import org.thinkingstudio.ryoamiclights.api.DynamicLightHandlers;
 import org.thinkingstudio.ryoamiclights.api.item.ItemLightSources;
 
-//import com.deoxservices.chipscurioslight.utils.Utils;
+//import com.deoxservices.chipsarmorstandmenu.utils.Utils;
 
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;

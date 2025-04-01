@@ -1,7 +1,7 @@
-package com.deoxservices.chipscurioslight.compat.curios;
+package com.deoxservices.chipsarmorstandmenu.compat.curios;
 
-import com.deoxservices.chipscurioslight.utils.Constants;
-import com.deoxservices.chipscurioslight.utils.Utils;
+import com.deoxservices.chipsarmorstandmenu.utils.Constants;
+import com.deoxservices.chipsarmorstandmenu.utils.Utils;
 //import net.minecraft.world.InteractionHand;
 //import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
