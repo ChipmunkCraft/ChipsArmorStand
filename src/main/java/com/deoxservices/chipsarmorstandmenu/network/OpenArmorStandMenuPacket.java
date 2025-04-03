@@ -7,6 +7,7 @@ import com.deoxservices.chipsarmorstandmenu.utils.Utils;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,6 +19,16 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record OpenArmorStandMenuPacket(int entityId, boolean showArms, boolean ownerOnly) implements CustomPacketPayload {
     public static final Type<OpenArmorStandMenuPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "open_armor_stand_menu"));
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, OpenArmorStandMenuPacket> OPEN_STREAM_CODEC =
+        StreamCodec.of(
+            (buf, packet) -> {
+                buf.writeInt(packet.entityId());
+                buf.writeBoolean(packet.showArms());
+                buf.writeBoolean(packet.ownerOnly());
+            },
+            OpenArmorStandMenuPacket::new
+        );
 
     public OpenArmorStandMenuPacket(RegistryFriendlyByteBuf buf) {
         this(buf.readInt(), buf.readBoolean(), buf.readBoolean());
@@ -47,15 +58,16 @@ public record OpenArmorStandMenuPacket(int entityId, boolean showArms, boolean o
                             return armorStand.getDisplayName();
                         }
 
+                        @SuppressWarnings("null")
                         @Override
                         public AbstractContainerMenu createMenu(int id, net.minecraft.world.entity.player.Inventory inv, net.minecraft.world.entity.player.Player p) {
                             Utils.logMsg("Creating ArmorStandMenu with ID: " + id, "debug");
                             return new ArmorStandMenu(id, inv, armorStand, msg.showArms());
                         }
                     }, buf -> {
+                        buf.writeBoolean(msg.ownerOnly());
                         buf.writeBoolean(msg.showArms());
                         buf.writeInt(msg.entityId());
-                        buf.writeBoolean(msg.ownerOnly());
                     });
                 }
             } else {

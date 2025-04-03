@@ -7,31 +7,14 @@ group = mod_group
 version = mod_version
 
 repositories {
+    mavenLocal()
     maven { url = 'https://maven.neoforged.net/releases' }
     maven { url = "https://api.modrinth.com/maven" }
     maven { url = 'https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1' }
     maven { url = "https://maven.theillusivec4.top/" }
 }
-
-sourceSets {
-    main {
-        java {
-            srcDirs 'src/main/java' // Your mod’s code
-        }
-    }
-    compileOnly {
-        java {
-            srcDirs = ['neoforge-minimal']
-        }
-    }
-}
 dependencies {
-    compileOnly sourceSets.compileOnly.output
-    runtimeOnly("net.neoforged:neoforge:${neoforge_version}") {
-        capabilities {
-            requireCapability('net.neoforged:neoforge') // Force API variant
-        }
-    }
+    implementation "net.neoforged:neoforge:${neoforge_version}"
     implementation "me.djtheredstoner:DevAuth-neoforge:1.2.1"
     implementation "maven.modrinth:obsidianui:0.2.7+mc1.21-neoforge"
     implementation files("${System.getProperty('user.home')}/.m2/repository/org/thinkingstudio/ryoamiclights/RyoamicLights-neoforge/${ryoamiclights_version}/RyoamicLights-neoforge-${ryoamiclights_version}.jar")
@@ -55,31 +38,25 @@ ext {
 
 neoForge {
     version = neoforge_version
+
     parchment {
-        mappingsVersion = parchment_mappings_version
         minecraftVersion = parchment_minecraft_version
+        mappingsVersion = parchment_mappings_version
     }
     runs {
         client {
             client()
-            jvmArguments = [
-                "-Dfml.modFolders=chipsarmorstandmenu%%${buildDir}/classes/java/main;chipsarmorstandmenu%%${buildDir}/resources/main",
-                '-Ddevauth.enabled=true',
-                '-Ddevauth.configDir=C:/Users/deoxd/.devauth',
-                '-Ddevauth.account=main'
-            ]
+            jvmArguments.add('-Ddevauth.enabled=true')
+            jvmArguments.add('-Ddevauth.configDir=C:/Users/deoxd/.devauth')
+            jvmArguments.add('-Ddevauth.account=main')
         }
         server {
             server()
             programArguments.addAll '--nogui'
-            systemProperty 'mixin.env.remapRefMap', 'true'
-            systemProperty 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
         }
         data {
             data()
             programArguments.addAll '--mod', mod_id, '--all', file('src/generated/resources').absolutePath, file('src/main/resources').absolutePath
-            systemProperty 'mixin.env.remapRefMap', 'true'
-            systemProperty 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
             
         }
         configureEach {
@@ -94,10 +71,10 @@ neoForge {
 }
 
 def archives_name = jar_name_start
-archives_name += jar_name_mcnf_versions
 if (hasProperty('mod_appendix')) {
     archives_name += "-${mod_appendix}"
 }
+archives_name += jar_name_mcnf_versions
 
 base {
     archivesName = archives_name
@@ -107,16 +84,7 @@ tasks.named('jar') {
     version = ''  // Prevent version suffix
 }
 
-jar {
-    exclude 'net/minecraft/**' // Don’t package Minecraft classes
-}
-
 tasks.named('build') {
-    doFirst { // Before running
-        delete fileTree("${buildDir}/classes/java/main") {
-            include 'net/minecraft/**'
-        }
-    }
     doLast {
         copy {
             from "${buildDir}/libs"
@@ -168,24 +136,32 @@ tasks.withType(ProcessResources).configureEach {
     }
 }
 
-tasks.register('compileNeoForgeSources', JavaCompile) {
-    source = sourceSets.compileOnly.java
-    classpath = sourceSets.main.compileClasspath
-    destinationDirectory.set(file("$buildDir/classes/java/compileOnly"))
-    javaCompiler = javaToolchains.compilerFor {
-        languageVersion = JavaLanguageVersion.of(project.java_target) // Java 21
+// Sync processed resources to bin/main after compilation
+tasks.named('compileJava') {
+    dependsOn processResources
+    doLast {
+        // Copy processed neoforge.mods.toml to bin/main
+        copy {
+            from processResources.destinationDir
+            into 'bin/main'
+            include 'META-INF/neoforge.mods.toml'
+        }
     }
 }
 
-tasks.named('compileJava') {
-    dependsOn 'compileNeoForgeSources', 'processResources'
+// Custom tasks
+task cleanAll {
+    description 'Cleans all projects, leaving run/ and finalJars/ intact'
+    dependsOn tasks.named('clean')
+    subprojects.each { subproj ->
+        dependsOn "${subproj.path}:clean"
+    }
 }
 
-// Disable default compileCompileOnlyJava
-tasks.named('compileCompileOnlyJava') {
-    enabled = false // Skip it, we use compileNeoForgeSources
-}
-
-tasks.named('sourcesJar') {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE // Skip duplicates
+task buildAll {
+    description 'Builds all projects, copying JARs to finalJars/'
+    dependsOn tasks.named('build')
+    subprojects.each { subproj ->
+        dependsOn "${subproj.path}:build"
+    }
 }
