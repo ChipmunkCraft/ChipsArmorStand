@@ -19,19 +19,20 @@ sourceSets {
             srcDirs 'src/main/java' // Your mod’s code
         }
     }
-    compileOnly {
+    /*compileOnly {
         java {
             srcDirs = ['neoforge-minimal']
         }
-    }
+    }*/
 }
 dependencies {
-    compileOnly sourceSets.compileOnly.output
+    /*compileOnly sourceSets.compileOnly.output
     runtimeOnly("net.neoforged:neoforge:${neoforge_version}") {
         capabilities {
             requireCapability('net.neoforged:neoforge') // Force API variant
         }
-    }
+    }*/
+    implementation "net.neoforged:neoforge:${neoforge_version}"
     implementation "me.djtheredstoner:DevAuth-neoforge:1.2.1"
     implementation "maven.modrinth:obsidianui:0.2.7+mc1.21-neoforge"
     implementation files("${System.getProperty('user.home')}/.m2/repository/org/thinkingstudio/ryoamiclights/RyoamicLights-neoforge/${ryoamiclights_version}/RyoamicLights-neoforge-${ryoamiclights_version}.jar")
@@ -63,7 +64,7 @@ neoForge {
         client {
             client()
             jvmArguments = [
-                "-Dfml.modFolders=chipsarmorstandmenu%%${buildDir}/classes/java/main;chipsarmorstandmenu%%${buildDir}/resources/main",
+                "-Dfml.modFolders=chipsarmorstandmenu%%${buildDir}\\classes\\java\\main;chipsarmorstandmenu%%${buildDir}\\resources\\main",
                 '-Ddevauth.enabled=true',
                 '-Ddevauth.configDir=C:/Users/deoxd/.devauth',
                 '-Ddevauth.account=main'
@@ -168,23 +169,23 @@ tasks.withType(ProcessResources).configureEach {
     }
 }
 
-tasks.register('compileNeoForgeSources', JavaCompile) {
+/*tasks.register('compileNeoForgeSources', JavaCompile) {
     source = sourceSets.compileOnly.java
     classpath = sourceSets.main.compileClasspath
     destinationDirectory.set(file("$buildDir/classes/java/compileOnly"))
     javaCompiler = javaToolchains.compilerFor {
         languageVersion = JavaLanguageVersion.of(project.java_target) // Java 21
     }
-}
+}*/
 
 tasks.named('compileJava') {
-    dependsOn 'compileNeoForgeSources', 'processResources'
+    dependsOn /*'compileNeoForgeSources', */'processResources'
 }
 
 // Disable default compileCompileOnlyJava
-tasks.named('compileCompileOnlyJava') {
+/*tasks.named('compileCompileOnlyJava') {
     enabled = false // Skip it, we use compileNeoForgeSources
-}
+}*/
 
 tasks.named('sourcesJar') {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE // Skip duplicates

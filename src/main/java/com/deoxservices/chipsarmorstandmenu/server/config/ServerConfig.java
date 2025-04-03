@@ -20,9 +20,9 @@ public class ServerConfig {
         Config(ModConfigSpec.Builder builder) {
             builder.push("general"); // Start Section
             TIMEOUT_SECONDS = builder
-                .comment("Armor Stand Menu Timeout in seconds. Default: 30 seconds")
+                .comment("Armor Stand Menu Timeout in seconds. Default: 300 seconds")
                 .translation("gui.chipsarmorstandmenu.config.TIMEOUT_SECONDS")
-                .define("TIMEOUT_SECONDS", 30);
+                .define("TIMEOUT_SECONDS", 300);
             builder.pop(); // End the section
 
         }

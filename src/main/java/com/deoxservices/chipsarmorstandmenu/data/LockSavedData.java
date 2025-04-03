@@ -24,6 +24,7 @@ public class LockSavedData extends SavedData {
         return lockedArmorStands;
     }
 
+    @SuppressWarnings("null")
     @Override
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
         CompoundTag locks = new CompoundTag();

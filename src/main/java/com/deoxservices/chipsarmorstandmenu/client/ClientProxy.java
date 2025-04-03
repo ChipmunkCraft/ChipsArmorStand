@@ -1,7 +1,7 @@
 package com.deoxservices.chipsarmorstandmenu.client;
 
 import com.deoxservices.chipsarmorstandmenu.ChipsArmorStandMenu;
-import com.deoxservices.chipsarmorstandmenu.client.screen.ArmorStandScreen;
+import com.deoxservices.chipsarmorstandmenu.client.gui.screen.ArmorStandScreen;
 import com.deoxservices.chipsarmorstandmenu.utils.Constants;
 import com.deoxservices.chipsarmorstandmenu.utils.Utils;
 

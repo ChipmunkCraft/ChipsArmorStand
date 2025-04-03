@@ -1,4 +1,4 @@
-package net.minecraft.world.item;
+package com.deoxservices.chipsarmorstandmenu.world.item;
 
 import com.mojang.serialization.Codec;
 import java.util.function.IntFunction;

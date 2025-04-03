@@ -2,6 +2,7 @@ package com.deoxservices.chipsarmorstandmenu.compat.curios;
 
 import com.deoxservices.chipsarmorstandmenu.utils.Constants;
 import com.deoxservices.chipsarmorstandmenu.utils.Utils;
+//import com.deoxservices.chipsarmorstandmenu.world.item.ItemDisplayContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -15,7 +16,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.entity.ArmorStandRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.ItemRenderer;
+//import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
@@ -26,7 +27,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -169,7 +169,8 @@ public class DynamicRenderer extends ArmorStandRenderer implements ICurioRendere
         poseStack.popPose();
     }
 
-// ArmorStandRenderer for armor stands
+    // ArmorStandRenderer for armor stands
+    @SuppressWarnings("null")
     @Override
     public void render(ArmorStand entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
@@ -213,9 +214,9 @@ public class DynamicRenderer extends ArmorStandRenderer implements ICurioRendere
     }
 
     private void renderItem(ItemStack stack, SlotContext slotContext, PoseStack poseStack, MultiBufferSource buffer, int light) {
-        ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-        BakedModel model = itemRenderer.getModel(stack, slotContext.entity().level(), slotContext.entity(), 0);
-        itemRenderer.render(stack, ItemDisplayContext.NONE, false, poseStack, buffer, light, OverlayTexture.NO_OVERLAY, model);
+        //ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
+        //BakedModel model = itemRenderer.getModel(stack, slotContext.entity().level(), slotContext.entity(), 0);
+        //itemRenderer.render(stack, ItemDisplayContext.NONE, false, poseStack, buffer, light, OverlayTexture.NO_OVERLAY, model);
     }
 
     @SubscribeEvent
