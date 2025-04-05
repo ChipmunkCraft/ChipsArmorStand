@@ -46,6 +46,7 @@ neoForge {
     runs {
         client {
             client()
+            programArguments.addAll '--width=1280', '--height=720'
             jvmArguments.add('-Ddevauth.enabled=true')
             jvmArguments.add('-Ddevauth.configDir=C:/Users/deoxd/.devauth')
             jvmArguments.add('-Ddevauth.account=main')
@@ -85,6 +86,11 @@ tasks.named('jar') {
 }
 
 tasks.named('build') {
+    doFirst {
+        delete fileTree('/run/logs') {
+            include '*.gz'
+        }
+    }
     doLast {
         copy {
             from "${buildDir}/libs"

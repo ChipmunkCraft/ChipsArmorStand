@@ -1,6 +1,7 @@
 package com.deoxservices.chipsarmorstandmenu.network;
 
 import com.deoxservices.chipsarmorstandmenu.utils.Utils;
+import com.deoxservices.chipsarmorstandmenu.utils.Constants;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -11,7 +12,12 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ToggleArmorStandPacket(int entityId, String toggleType, boolean value) implements CustomPacketPayload {
-    public static final Type<ToggleArmorStandPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("chipsarmorstandmenu", "toggle_armor_stand"));
+
+    public ToggleArmorStandPacket(RegistryFriendlyByteBuf buf) {
+        this(buf.readInt(), buf.readUtf(), buf.readBoolean());
+    }
+
+    public static final Type<ToggleArmorStandPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "toggle_armor_stand"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ToggleArmorStandPacket> TOGGLE_STREAM_CODEC =
         StreamCodec.of(
@@ -23,17 +29,9 @@ public record ToggleArmorStandPacket(int entityId, String toggleType, boolean va
             ToggleArmorStandPacket::new
         );
 
-    public ToggleArmorStandPacket(RegistryFriendlyByteBuf buf) {
-        this(buf.readInt(), buf.readUtf(), buf.readBoolean());
-    }
-
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
-    }
-
-    public static void clientHandle(ToggleArmorStandPacket msg, IPayloadContext ctx) {
-        // No OP
     }
 
     public static void serverHandle(ToggleArmorStandPacket msg, IPayloadContext ctx) {
@@ -50,4 +48,6 @@ public record ToggleArmorStandPacket(int entityId, String toggleType, boolean va
             }
         });
     }
+
+    public static void clientHandle(ToggleArmorStandPacket msg, IPayloadContext ctx) {}
 }

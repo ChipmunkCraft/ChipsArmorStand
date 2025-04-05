@@ -16,8 +16,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 public class ArmorStandScreen extends AbstractContainerScreen<ArmorStandMenu> {
     Minecraft minecraft = Minecraft.getInstance();
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "textures/gui/container/armor_stand_menu.png");
-    private static final ResourceLocation EMPTY_SHIELD = ResourceLocation.withDefaultNamespace("item/empty_armor_slot_shield");
-    private static final ResourceLocation EMPTY_SWORD = ResourceLocation.withDefaultNamespace("item/empty_slot_sword");
 
     private CustomCheckbox showArmsCheckbox;
     private CustomCheckbox showBaseCheckbox;
@@ -26,8 +24,6 @@ public class ArmorStandScreen extends AbstractContainerScreen<ArmorStandMenu> {
     protected int playerLabelY;
     protected int armorLeftLabelX;
     protected int armorLeftLabelY;
-    protected int inventoryLabelX;
-    protected int inventoryLabelY;
     protected final Component playerInventoryTitle;
 
     public ArmorStandScreen(ArmorStandMenu menu, Inventory playerInv, Component title) {
@@ -37,10 +33,8 @@ public class ArmorStandScreen extends AbstractContainerScreen<ArmorStandMenu> {
         this.playerInventoryTitle = playerInv.getDisplayName();
         this.playerLabelX = 8;
         this.playerLabelY = 4;
-        this.armorLeftLabelX = 173;
-        this.armorLeftLabelY = 7;
-        this.inventoryLabelX = 8;
-        this.inventoryLabelY = 79;
+        this.armorLeftLabelX = 180;
+        this.armorLeftLabelY = 4;
     }
 
     @Override
@@ -50,7 +44,7 @@ public class ArmorStandScreen extends AbstractContainerScreen<ArmorStandMenu> {
         int y = (this.height - this.imageHeight) / 2;
 
         showStandCheckbox = CustomCheckbox.builder(Component.translatable("gui.chipsarmorstandmenu.show_stand"), minecraft.font)
-            .pos(x + 110, y + 8)
+            .pos(x + 180, y + 110)
             .maxWidth(60)
             .selected(menu.getShowStand())
             .onValueChange((checkbox, value) -> {
@@ -59,7 +53,7 @@ public class ArmorStandScreen extends AbstractContainerScreen<ArmorStandMenu> {
                 }}).build();
 
         showArmsCheckbox = CustomCheckbox.builder(Component.translatable("gui.chipsarmorstandmenu.show_arms"), minecraft.font)
-            .pos(x + 110, y + 20)
+            .pos(x + 180, y + 122)
             .maxWidth(60)
             .selected(menu.getShowArms())
             .onValueChange((checkbox, value) -> {
@@ -68,7 +62,7 @@ public class ArmorStandScreen extends AbstractContainerScreen<ArmorStandMenu> {
                 }}).build();
 
         showBaseCheckbox = CustomCheckbox.builder(Component.translatable("gui.chipsarmorstandmenu.show_base"), minecraft.font)
-            .pos(x + 110, y + 32)
+            .pos(x + 180, y + 134)
             .maxWidth(60)
             .selected(menu.getShowBase())
             .onValueChange((checkbox, value) -> {
@@ -85,8 +79,6 @@ public class ArmorStandScreen extends AbstractContainerScreen<ArmorStandMenu> {
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
         guiGraphics.blit(TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight);
-        guiGraphics.blit(EMPTY_SWORD, 180, 84, 0, 0, 16, 16);
-        guiGraphics.blit(EMPTY_SHIELD, 213, 84, 0, 0, 16, 16);
     }
 
     @SuppressWarnings("null")
@@ -95,10 +87,8 @@ public class ArmorStandScreen extends AbstractContainerScreen<ArmorStandMenu> {
         guiGraphics.drawString(this.font, minecraft.player.getDisplayName(), this.playerLabelX, this.playerLabelY, 4210752, false);
         guiGraphics.drawString(this.font, this.title, this.armorLeftLabelX, this.armorLeftLabelY, 4210752, false);
 
-        guiGraphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 4210752, false);
-
-        guiGraphics.drawString(this.font, Component.translatable("gui.chipsarmorstandmenu.player_hot_bar"), 8, 137, 4210752, false);
-        guiGraphics.drawString(this.font, Component.translatable("gui.chipsarmorstandmenu.stand_hot_bar"), 8, 160, 4210752, false);
+        guiGraphics.drawString(this.font, Component.translatable("gui.chipsarmorstandmenu.player_hot_bar"), 8, 145, 4210752, false);
+        guiGraphics.drawString(this.font, Component.translatable("gui.chipsarmorstandmenu.stand_hot_bar"), 8, 173, 4210752, false);
     }
 
     @SuppressWarnings("null")

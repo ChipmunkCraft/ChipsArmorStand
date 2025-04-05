@@ -6,10 +6,10 @@ import com.deoxservices.chipsarmorstandmenu.utils.Constants;
 import com.deoxservices.chipsarmorstandmenu.utils.Utils;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
@@ -17,29 +17,30 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record OpenArmorStandMenuPacket(int entityId, boolean showArms, boolean ownerOnly) implements CustomPacketPayload {
-    public static final Type<OpenArmorStandMenuPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "open_armor_stand_menu"));
+public record OpenArmorStandMenuServerPacket(int entityId, boolean showArms, boolean ownerOnly) implements CustomPacketPayload {
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, OpenArmorStandMenuPacket> OPEN_STREAM_CODEC =
+    public OpenArmorStandMenuServerPacket(RegistryFriendlyByteBuf buf) {
+        this(buf.readInt(), buf.readBoolean(), buf.readBoolean());
+    }
+
+    public static final Type<OpenArmorStandMenuServerPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "open_armor_stand_menu"));
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, OpenArmorStandMenuServerPacket> OPEN_STREAM_CODEC =
         StreamCodec.of(
             (buf, packet) -> {
                 buf.writeInt(packet.entityId());
                 buf.writeBoolean(packet.showArms());
                 buf.writeBoolean(packet.ownerOnly());
             },
-            OpenArmorStandMenuPacket::new
+            OpenArmorStandMenuServerPacket::new
         );
-
-    public OpenArmorStandMenuPacket(RegistryFriendlyByteBuf buf) {
-        this(buf.readInt(), buf.readBoolean(), buf.readBoolean());
-    }
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 
-    public static void serverHandle(OpenArmorStandMenuPacket msg, IPayloadContext ctx) {
+    public static void serverHandle(OpenArmorStandMenuServerPacket msg, IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) ctx.player();
             Entity entity = player.level().getEntity(msg.entityId());
@@ -61,8 +62,8 @@ public record OpenArmorStandMenuPacket(int entityId, boolean showArms, boolean o
                         @SuppressWarnings("null")
                         @Override
                         public AbstractContainerMenu createMenu(int id, net.minecraft.world.entity.player.Inventory inv, net.minecraft.world.entity.player.Player p) {
-                            Utils.logMsg("Creating ArmorStandMenu with ID: " + id, "debug");
-                            return new ArmorStandMenu(id, inv, armorStand, msg.showArms());
+                            Utils.logMsg("Creating Server ArmorStandMenu with ID: " + id, "debug");
+                            return new ArmorStandMenu(id, inv, armorStand, msg.showArms(), msg.ownerOnly(), null);
                         }
                     }, buf -> {
                         buf.writeBoolean(msg.ownerOnly());
@@ -76,5 +77,5 @@ public record OpenArmorStandMenuPacket(int entityId, boolean showArms, boolean o
         });
     }
 
-    public static void clientHandle(OpenArmorStandMenuPacket msg, IPayloadContext ctx) {}
+    public static void clientHandle(OpenArmorStandMenuServerPacket msg, IPayloadContext ctx) {}
 }

@@ -7,7 +7,7 @@ import com.deoxservices.chipsarmorstandmenu.client.ClientProxyGameEvents;
 import com.deoxservices.chipsarmorstandmenu.utils.Utils;
 import com.mojang.datafixers.util.Pair;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -25,12 +25,14 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 public class ArmorStandMenu extends AbstractContainerMenu {
 
     private ArmorStand armorStand;
-    private final boolean showArms;
-    private boolean showBase = true;  // Default on
-    private boolean showStand = true; // Default on
-    public int ticksSinceInteraction = 0;
-    private final int entityId; // Store for later lookup
     private final Player player; // Add player field
+    private final int entityId; // Store for later lookup
+    private final boolean showArms;
+    @SuppressWarnings("unused")
+    private final boolean ownerOnly;
+    private boolean showStand = true; // Default on
+    private boolean showBase = true;  // Default on
+    public int ticksSinceInteraction = 0;
     private static final ResourceLocation EMPTY_HELMET = ResourceLocation.withDefaultNamespace("item/empty_armor_slot_helmet");
     private static final ResourceLocation EMPTY_CHESTPLATE = ResourceLocation.withDefaultNamespace("item/empty_armor_slot_chestplate");
     private static final ResourceLocation EMPTY_LEGGINGS = ResourceLocation.withDefaultNamespace("item/empty_armor_slot_leggings");
@@ -38,68 +40,68 @@ public class ArmorStandMenu extends AbstractContainerMenu {
     private static final ResourceLocation EMPTY_SHIELD = ResourceLocation.withDefaultNamespace("item/empty_armor_slot_shield");
     private static final ResourceLocation EMPTY_SWORD = ResourceLocation.withDefaultNamespace("item/empty_slot_sword");
 
-    public ArmorStandMenu(int id, Inventory playerInv, ArmorStand armorStand, boolean showArms) {
+    public ArmorStandMenu(int id, Inventory playerInv, ArmorStand armorStand, boolean showArms, boolean ownerOnly, RegistryFriendlyByteBuf extraData) {
         super(ChipsArmorStandMenu.ARMOR_STAND_MENU.get(), id);
-        this.armorStand = armorStand;
-        this.showArms = showArms;
-        this.entityId = armorStand != null ? armorStand.getId() : -1;
         this.player = playerInv.player;
-        if (armorStand != null) {
-            Utils.logMsg("Initialized ArmorStandMenu with ArmorStand ID: " + armorStand.getId() + ", showArms: " + showArms, "debug");
-            this.showBase = armorStand.isNoBasePlate();
-            this.showStand = !armorStand.isInvisible();
-        }
-        initSlots(playerInv);
-    }
-
-    // Client constructor with entity lookup
-    public ArmorStandMenu(int id, Inventory playerInv, FriendlyByteBuf extraData) {
-        super(ChipsArmorStandMenu.ARMOR_STAND_MENU.get(), id);
-        this.showArms = extraData.readBoolean();
-        this.entityId = extraData.readInt();
-        this.player = playerInv.player;
-        this.armorStand = (ArmorStand) playerInv.player.level().getEntity(entityId);
-        if (armorStand != null) {
-            Utils.logMsg("Client initialized ArmorStandMenu with ArmorStand ID: " + armorStand.getId() + ", showArms: " + showArms, "debug");
-            this.showBase = armorStand.isNoBasePlate();
-            this.showStand = !armorStand.isInvisible();
+        if (extraData != null) {
+            // Client-side: Read from packet
+            this.ownerOnly = extraData.readBoolean();
+            this.showArms = extraData.readBoolean();
+            this.entityId = extraData.readInt();
+            this.armorStand = null; // Lazy load in initSlots or broadcastChanges
+            Utils.logMsg("Client Menu ID: "+ id +" | Initialized ArmorStandMenu - ID: " + entityId + ", showArms: " + showArms + ", ownerOnly: " + ownerOnly, "debug");
         } else {
-            Utils.logMsg("Client initialized ArmorStandMenu with null ArmorStand (pending sync), showArms: " + showArms, "debug");
+            // Server-side: Use ArmorStand directly
+            this.armorStand = armorStand;
+            this.ownerOnly = ownerOnly;
+            this.showArms = showArms;
+            this.entityId = armorStand != null ? armorStand.getId() : -1;
+            if (armorStand!=null) {
+                this.showStand = !armorStand.isInvisible();
+                this.showBase = armorStand.isNoBasePlate();
+            }
+            Utils.logMsg("Server Menu ID: "+ id +" | Initialized ArmorStandMenu - ID: " + entityId + ", showArms: " + showArms + ", ownerOnly: " + ownerOnly, "debug");
         }
         initSlots(playerInv);
     }
 
     private void initSlots(Inventory playerInv) {
+        // Sync armorStand on client if needed
+        if (armorStand == null && entityId != -1 && player.level().getEntity(entityId) instanceof ArmorStand armor_stand) {
+            this.armorStand = armor_stand;
+            Utils.logMsg("Synced armorStand - ID: " + entityId, "debug");
+        }
+        Utils.logMsg("Adding slots for armorStand: " + (armorStand != null ? armorStand.getId() : "null"), "debug");
         // Always add slots—client/server must match
 
         // Armor Stand Armor Slots
-        this.addSlot(new SlotArmorStand(this, armorStand, playerInv.player, EquipmentSlot.HEAD, 0, 231, 14, EMPTY_HELMET));
-        this.addSlot(new SlotArmorStand(this, armorStand, playerInv.player, EquipmentSlot.CHEST, 1, 231, 32, EMPTY_CHESTPLATE));
-        this.addSlot(new SlotArmorStand(this, armorStand, playerInv.player, EquipmentSlot.LEGS, 2, 231, 50, EMPTY_LEGGINGS));
-        this.addSlot(new SlotArmorStand(this, armorStand, playerInv.player, EquipmentSlot.FEET, 3, 231, 68, EMPTY_BOOTS));
+        this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.HEAD, 0, 231, 15, EMPTY_HELMET));
+        this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.CHEST, 1, 231, 33, EMPTY_CHESTPLATE));
+        this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.LEGS, 2, 231, 51, EMPTY_LEGGINGS));
+        this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.FEET, 3, 231, 69, EMPTY_BOOTS));
         if (showArms) {
-            this.addSlot(new SlotArmorStand(this, armorStand, playerInv.player, EquipmentSlot.MAINHAND, 4, 180, 90, EMPTY_SWORD)); // Armor Stand Right Hand
-            this.addSlot(new SlotArmorStand(this, armorStand, playerInv.player, EquipmentSlot.OFFHAND, 5, 213, 90, EMPTY_SHIELD)); // Armor Stand Left Hand
+            this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.MAINHAND, 4, 180, 90, EMPTY_SWORD)); // Armor Stand Right Hand
+            this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.OFFHAND, 5, 213, 90, EMPTY_SHIELD)); // Armor Stand Left Hand
         }
 
         // Player inventory (27 slots)
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
-                this.addSlot(new Slot(playerInv, col + (row + 1) * 9, 8 + col * 18, 90 + row * 18));
+                this.addSlot(new Slot(playerInv, col + (row + 1) * 9, 8 + col * 18, 91 + row * 18));
             }
         }
 
         // Hotbar (9 slots)
         for (int col = 0; col < 9; col++) {
-            this.addSlot(new Slot(playerInv, col, 8 + col * 18, 148));
+            this.addSlot(new Slot(playerInv, col, 8 + col * 18, 155));
         }
 
         // Player Armor Slots
-        this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.HEAD, 39, 8, 14, EMPTY_HELMET)); // Player Helmet
-        this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.CHEST, 38, 8, 32, EMPTY_CHESTPLATE)); // Player Chestplate
-        this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.LEGS, 37, 8, 50, EMPTY_LEGGINGS)); // Player Leggings
-        this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.FEET, 36, 8, 68, EMPTY_BOOTS)); // Player Boots
-        this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.OFFHAND, 40, 77, 68, EMPTY_SHIELD)); // Player offhand
+        this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.HEAD, 39, 8, 15, EMPTY_HELMET)); // Player Helmet
+        this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.CHEST, 38, 8, 33, EMPTY_CHESTPLATE)); // Player Chestplate
+        this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.LEGS, 37, 8, 51, EMPTY_LEGGINGS)); // Player Leggings
+        this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.FEET, 36, 8, 69, EMPTY_BOOTS)); // Player Boots
+        this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.OFFHAND, 40, 77, 69, EMPTY_SHIELD)); // Player offhand
     }
 
     @SuppressWarnings("null")
@@ -167,12 +169,9 @@ public class ArmorStandMenu extends AbstractContainerMenu {
     @Override
     public void broadcastChanges() {
         super.broadcastChanges();
-        if (armorStand == null && !player.level().isClientSide) {
-            Player player = this.player;
-            if (player.level().getEntity(entityId) instanceof ArmorStand stand) {
-                this.armorStand = stand;
-                Utils.logMsg("Updated ArmorStandMenu with ArmorStand ID: " + armorStand.getId(), "debug");
-            }
+        if (armorStand == null && entityId != -1 && player.level().getEntity(entityId) instanceof ArmorStand armor_stand) {
+            this.armorStand = armor_stand;
+            Utils.logMsg("Broadcast synced armorStand - ID: " + entityId, "debug");
         }
     }
 
@@ -260,16 +259,15 @@ public class ArmorStandMenu extends AbstractContainerMenu {
     // Nested slot class
     public class SlotArmorStand extends Slot {
         private final ArmorStandMenu menu;
-        @SuppressWarnings("unused") // Suppress unused warning for now
-        private final Player player; // Keep for future use (e.g., permission checks)
+        private final ArmorStand armorStand;
         private final EquipmentSlot slotType;
         @Nullable
         private final ResourceLocation emptyIcon;
 
-        public SlotArmorStand(ArmorStandMenu menu, ArmorStand armorStand, Player player, EquipmentSlot slotType, int slotIndex, int x, int y, @Nullable ResourceLocation emptyIcon) {
+        public SlotArmorStand(ArmorStandMenu menu, ArmorStand armorStand, EquipmentSlot slotType, int slotIndex, int x, int y, @Nullable ResourceLocation emptyIcon) {
             super(new ArmorStandContainer(armorStand, slotType), slotIndex, x, y);
             this.menu = menu;
-            this.player = player;
+            this.armorStand = armorStand;
             this.slotType = slotType;
             this.emptyIcon = emptyIcon;
         }
@@ -277,7 +275,7 @@ public class ArmorStandMenu extends AbstractContainerMenu {
         @SuppressWarnings("null")
         @Override
         public boolean mayPlace(ItemStack stack) {
-            return armorStand != null && menu.isItemValidForSlot(this.slotType, stack);
+            return armorStand != null && menu.isItemValidForSlot(slotType, stack);
         }
 
         @Override
@@ -296,7 +294,7 @@ public class ArmorStandMenu extends AbstractContainerMenu {
 
         @Override
         public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
-            return this.emptyIcon != null ? Pair.of(InventoryMenu.BLOCK_ATLAS, this.emptyIcon) : super.getNoItemIcon();
+            return emptyIcon != null ? Pair.of(InventoryMenu.BLOCK_ATLAS, emptyIcon) : super.getNoItemIcon();
         }
     }
     // Nested container class

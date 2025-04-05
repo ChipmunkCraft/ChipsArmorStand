@@ -42,7 +42,7 @@ public class ChipsArmorStandMenu {
     private static final ArrayList<String> ITEMS = new ArrayList<>();
 
     private static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(net.minecraft.core.registries.Registries.MENU, Constants.MOD_ID);
-    public static final DeferredHolder<MenuType<?>, MenuType<ArmorStandMenu>> ARMOR_STAND_MENU = MENUS.register("armor_stand", () -> new MenuType<>((id, inv) -> new ArmorStandMenu(id, inv, null, false), FeatureFlags.DEFAULT_FLAGS));
+    public static final DeferredHolder<MenuType<?>, MenuType<ArmorStandMenu>> ARMOR_STAND_MENU = MENUS.register("armor_stand", () -> new MenuType<>((id, inv) -> new ArmorStandMenu(id, inv, null, false, false, null), FeatureFlags.DEFAULT_FLAGS));
 
     public ChipsArmorStandMenu(IEventBus modEventBus, ModContainer container) {
         MENUS.register(modEventBus);
