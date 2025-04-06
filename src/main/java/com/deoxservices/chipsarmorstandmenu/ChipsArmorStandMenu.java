@@ -21,7 +21,6 @@ import java.util.ArrayList;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
@@ -32,6 +31,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
@@ -42,7 +42,7 @@ public class ChipsArmorStandMenu {
     private static final ArrayList<String> ITEMS = new ArrayList<>();
 
     private static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(net.minecraft.core.registries.Registries.MENU, Constants.MOD_ID);
-    public static final DeferredHolder<MenuType<?>, MenuType<ArmorStandMenu>> ARMOR_STAND_MENU = MENUS.register("armor_stand", () -> new MenuType<>((id, inv) -> new ArmorStandMenu(id, inv, null, false, false, null), FeatureFlags.DEFAULT_FLAGS));
+    public static final DeferredHolder<MenuType<?>, MenuType<ArmorStandMenu>> ARMOR_STAND_MENU = MENUS.register("armor_stand", () -> IMenuTypeExtension.create((id, inv, buf) -> new ArmorStandMenu(id, inv, null, false, false, buf)));
 
     public ChipsArmorStandMenu(IEventBus modEventBus, ModContainer container) {
         MENUS.register(modEventBus);

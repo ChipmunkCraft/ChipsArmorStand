@@ -12,15 +12,15 @@ public class NetworkHandler {
 
         final PayloadRegistrar registrar = event.registrar(Constants.MOD_ID);
         registrar.playToServer(
-            OpenArmorStandMenuServerPacket.TYPE,
-            OpenArmorStandMenuServerPacket.OPEN_STREAM_CODEC,
-            new DirectionalPayloadHandler<>(OpenArmorStandMenuServerPacket::clientHandle, OpenArmorStandMenuServerPacket::serverHandle)
+            OpenArmorStandServerPacket.TYPE,
+            OpenArmorStandServerPacket.OPEN_STREAM_CODEC,
+            new DirectionalPayloadHandler<>(OpenArmorStandServerPacket::clientHandle, OpenArmorStandServerPacket::serverHandle)
         );
-        registrar.playToClient(
-            OpenArmorStandMenuClientPacket.TYPE,
-            OpenArmorStandMenuClientPacket.OPEN_STREAM_CODEC,
-            new DirectionalPayloadHandler<>(OpenArmorStandMenuClientPacket::clientHandle, OpenArmorStandMenuClientPacket::serverHandle)
-        );
+        /*registrar.playToClient(
+            OpenArmorStandClientPacket.TYPE,
+            OpenArmorStandClientPacket.OPEN_STREAM_CODEC,
+            new DirectionalPayloadHandler<>(OpenArmorStandClientPacket::clientHandle, OpenArmorStandClientPacket::serverHandle)
+        );*/
         registrar.playToServer(
             ToggleArmorStandPacket.TYPE,
             ToggleArmorStandPacket.TOGGLE_STREAM_CODEC,

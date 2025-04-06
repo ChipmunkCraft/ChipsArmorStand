@@ -43,65 +43,69 @@ public class ArmorStandMenu extends AbstractContainerMenu {
     public ArmorStandMenu(int id, Inventory playerInv, ArmorStand armorStand, boolean showArms, boolean ownerOnly, RegistryFriendlyByteBuf extraData) {
         super(ChipsArmorStandMenu.ARMOR_STAND_MENU.get(), id);
         this.player = playerInv.player;
-        if (extraData != null) {
+        if (player.level().isClientSide() && extraData!=null) {
             // Client-side: Read from packet
-            this.ownerOnly = extraData.readBoolean();
-            this.showArms = extraData.readBoolean();
             this.entityId = extraData.readInt();
+            this.showArms = extraData.readBoolean();
+            this.ownerOnly = extraData.readBoolean();
             this.armorStand = null; // Lazy load in initSlots or broadcastChanges
-            Utils.logMsg("Client Menu ID: "+ id +" | Initialized ArmorStandMenu - ID: " + entityId + ", showArms: " + showArms + ", ownerOnly: " + ownerOnly, "debug");
-        } else {
+            if (player.level().getEntity(entityId) instanceof ArmorStand as)
+            {
+                this.armorStand = as; // Lazy load in initSlots or broadcastChanges
+            }
+            Utils.logMsg("Client Initialized ArmorStandMenu ID: "+ id +" | ArmorStandId: " + entityId + ", showArms: " + showArms + ", ownerOnly: " + ownerOnly, "debug");
+            initSlots(playerInv);
+        } else if (!player.level().isClientSide()) {
             // Server-side: Use ArmorStand directly
             this.armorStand = armorStand;
-            this.ownerOnly = ownerOnly;
             this.showArms = showArms;
+            this.ownerOnly = ownerOnly;
             this.entityId = armorStand != null ? armorStand.getId() : -1;
             if (armorStand!=null) {
                 this.showStand = !armorStand.isInvisible();
                 this.showBase = armorStand.isNoBasePlate();
             }
-            Utils.logMsg("Server Menu ID: "+ id +" | Initialized ArmorStandMenu - ID: " + entityId + ", showArms: " + showArms + ", ownerOnly: " + ownerOnly, "debug");
+            Utils.logMsg("Server Initialized ArmorStandMenu ID: "+ id +" |  ArmorStandId: " + entityId + ", showArms: " + showArms + ", ownerOnly: " + ownerOnly, "debug");
+            initSlots(playerInv);
+        } else {
+            this.ownerOnly = true;
+            this.showArms = true;
+            this.entityId = -1;
+            Utils.logMsg("Armor Stand Menu is neither Client nor Server or extraData is null. How did you get here?", "debug");
         }
-        initSlots(playerInv);
     }
 
     private void initSlots(Inventory playerInv) {
-        // Sync armorStand on client if needed
-        if (armorStand == null && entityId != -1 && player.level().getEntity(entityId) instanceof ArmorStand armor_stand) {
-            this.armorStand = armor_stand;
-            Utils.logMsg("Synced armorStand - ID: " + entityId, "debug");
-        }
-        Utils.logMsg("Adding slots for armorStand: " + (armorStand != null ? armorStand.getId() : "null"), "debug");
-        // Always add slots—client/server must match
-
-        // Armor Stand Armor Slots
-        this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.HEAD, 0, 231, 15, EMPTY_HELMET));
-        this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.CHEST, 1, 231, 33, EMPTY_CHESTPLATE));
-        this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.LEGS, 2, 231, 51, EMPTY_LEGGINGS));
-        this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.FEET, 3, 231, 69, EMPTY_BOOTS));
-        if (showArms) {
-            this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.MAINHAND, 4, 180, 90, EMPTY_SWORD)); // Armor Stand Right Hand
-            this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.OFFHAND, 5, 213, 90, EMPTY_SHIELD)); // Armor Stand Left Hand
-        }
-
-        // Player inventory (27 slots)
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 9; col++) {
-                this.addSlot(new Slot(playerInv, col + (row + 1) * 9, 8 + col * 18, 91 + row * 18));
+        Utils.logMsg("Attempting to add slots for armorStand: " + (armorStand != null ? armorStand.getId() : "null"), "debug");
+        if (armorStand!=null)
+        {
+            // Armor Stand Armor Slots
+            this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.HEAD, 0, 231, 15, EMPTY_HELMET));
+            this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.CHEST, 1, 231, 33, EMPTY_CHESTPLATE));
+            this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.LEGS, 2, 231, 51, EMPTY_LEGGINGS));
+            this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.FEET, 3, 231, 69, EMPTY_BOOTS));
+            if (showArms) {
+                this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.MAINHAND, 4, 180, 90, EMPTY_SWORD)); // Armor Stand Right Hand
+                this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.OFFHAND, 5, 213, 90, EMPTY_SHIELD)); // Armor Stand Left Hand
             }
+            // Player inventory (27 slots)
+            for (int row = 0; row < 3; row++) {
+                for (int col = 0; col < 9; col++) {
+                    this.addSlot(new Slot(playerInv, col + (row + 1) * 9, 8 + col * 18, 91 + row * 18));
+                }
+            }
+            // Hotbar (9 slots)
+            for (int col = 0; col < 9; col++) {
+                this.addSlot(new Slot(playerInv, col, 8 + col * 18, 155));
+            }
+            // Player Armor Slots
+            this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.HEAD, 39, 8, 15, EMPTY_HELMET)); // Player Helmet
+            this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.CHEST, 38, 8, 33, EMPTY_CHESTPLATE)); // Player Chestplate
+            this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.LEGS, 37, 8, 51, EMPTY_LEGGINGS)); // Player Leggings
+            this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.FEET, 36, 8, 69, EMPTY_BOOTS)); // Player Boots
+            this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.OFFHAND, 40, 77, 69, EMPTY_SHIELD)); // Player offhand
+            Utils.logMsg("Added slots for armorStand: " + (armorStand != null ? armorStand.getId() : "null"), "debug");
         }
-
-        // Hotbar (9 slots)
-        for (int col = 0; col < 9; col++) {
-            this.addSlot(new Slot(playerInv, col, 8 + col * 18, 155));
-        }
-
-        // Player Armor Slots
-        this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.HEAD, 39, 8, 15, EMPTY_HELMET)); // Player Helmet
-        this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.CHEST, 38, 8, 33, EMPTY_CHESTPLATE)); // Player Chestplate
-        this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.LEGS, 37, 8, 51, EMPTY_LEGGINGS)); // Player Leggings
-        this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.FEET, 36, 8, 69, EMPTY_BOOTS)); // Player Boots
-        this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.OFFHAND, 40, 77, 69, EMPTY_SHIELD)); // Player offhand
     }
 
     @SuppressWarnings("null")

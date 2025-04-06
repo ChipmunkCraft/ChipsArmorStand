@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import com.deoxservices.chipsarmorstandmenu.client.config.ClientConfig;
 import com.deoxservices.chipsarmorstandmenu.data.LockSavedData;
-import com.deoxservices.chipsarmorstandmenu.network.OpenArmorStandMenuServerPacket;
+import com.deoxservices.chipsarmorstandmenu.network.OpenArmorStandServerPacket;
 import com.deoxservices.chipsarmorstandmenu.utils.Constants;
 import com.deoxservices.chipsarmorstandmenu.utils.Utils;
 import net.minecraft.client.Minecraft;
@@ -47,7 +47,7 @@ public class ClientProxyGameEvents {
                         return;
                     }
                     Utils.logMsg("Hit armor stand, sending packet for ID: " + armorStand.getId(), "debug");
-                    PacketDistributor.sendToServer(new OpenArmorStandMenuServerPacket(armorStand.getId(), armorStand.isShowArms(), false));
+                    PacketDistributor.sendToServer(new OpenArmorStandServerPacket(armorStand.getId(), armorStand.isShowArms(), false));
                     event.setCanceled(true);
                     event.setSwingHand(false);
                 }
