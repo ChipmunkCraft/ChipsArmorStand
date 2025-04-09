@@ -11,6 +11,7 @@ import com.deoxservices.chipsarmorstandmenu.client.config.ClientConfig;
 import com.deoxservices.chipsarmorstandmenu.compat.curios.CuriosCompat;
 import com.deoxservices.chipsarmorstandmenu.compat.curios.DynamicRenderer;
 import com.deoxservices.chipsarmorstandmenu.compat.ryoamiclights.RyoamicLightHandler;
+import com.deoxservices.chipsarmorstandmenu.data.ArmorStandData;
 import com.deoxservices.chipsarmorstandmenu.menu.ArmorStandMenu;
 import com.deoxservices.chipsarmorstandmenu.network.NetworkHandler;
 import com.deoxservices.chipsarmorstandmenu.server.config.ServerConfig;
@@ -18,6 +19,8 @@ import com.deoxservices.chipsarmorstandmenu.utils.Constants;
 import com.deoxservices.chipsarmorstandmenu.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -31,9 +34,11 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
 
 @Mod(Constants.MOD_ID)
@@ -42,25 +47,30 @@ public class ChipsArmorStandMenu {
     private static final ArrayList<String> ITEMS = new ArrayList<>();
 
     private static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(net.minecraft.core.registries.Registries.MENU, Constants.MOD_ID);
-    public static final DeferredHolder<MenuType<?>, MenuType<ArmorStandMenu>> ARMOR_STAND_MENU = MENUS.register("armor_stand", () -> IMenuTypeExtension.create((id, inv, buf) -> new ArmorStandMenu(id, inv, null, false, false, buf)));
+    public static final DeferredHolder<MenuType<?>, MenuType<ArmorStandMenu>> ARMOR_STAND_MENU = MENUS.register("armor_stand_menu", () -> IMenuTypeExtension.create((id, inv, buf) -> new ArmorStandMenu(id, inv, null, buf)));
+
+    private static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Constants.MOD_ID);
+    public static final DeferredHolder<AttachmentType<?>, AttachmentType<ArmorStandData>> ARMOR_STAND_DATA = ATTACHMENTS.register("armor_stand_data", 
+        () -> AttachmentType.builder(() -> new ArmorStandData(null, new HashMap<>(Map.of())))
+            .serialize(ArmorStandData.CODEC)
+            .build());
 
     public ChipsArmorStandMenu(IEventBus modEventBus, ModContainer container) {
         MENUS.register(modEventBus);
+        ATTACHMENTS.register(modEventBus);
         modEventBus.addListener(NetworkHandler::register);
         container.registerConfig(ModConfig.Type.CLIENT, ClientConfig.CONFIG_SPEC);
         container.registerConfig(ModConfig.Type.SERVER, ServerConfig.CONFIG_SPEC);
         new CuriosCompat();
-
         // Register DynamicLightHandler for players on client-side only
         if (Constants.RYOAMICLIGHTS_LOADED && FMLEnvironment.dist.isClient()) {
             RyoamicLightHandler.registerHandlers();
             Utils.logMsg("Registered RyoamicLights DynamicLightHandler for Curios slots.", "info");
         }
+        Utils.logMsg("Initialized mod with ArmorStandData attachment", "debug");
     }
-
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
-
         //List<?> itemsList = ClientConfig.CONFIG.CURIOS_ITEMS.get();
         ITEMS.add("minecraft:lantern");
         ITEMS.add("minecraft:soul_lantern");

@@ -1,7 +1,9 @@
 package com.deoxservices.chipsarmorstandmenu.network;
 
 import com.deoxservices.chipsarmorstandmenu.utils.Utils;
+import com.deoxservices.chipsarmorstandmenu.data.ArmorStandData;
 import com.deoxservices.chipsarmorstandmenu.utils.Constants;
+
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -41,9 +43,11 @@ public record ToggleArmorStandPacket(int entityId, String toggleType, boolean va
             if (entity instanceof ArmorStand armorStand) {
                 Utils.logMsg("Server toggling " + msg.toggleType() + " to " + msg.value() + " for ID: " + msg.entityId(), "debug");
                 switch (msg.toggleType()) {
-                    case "arms" -> armorStand.setShowArms(msg.value());
-                    case "base" -> armorStand.setNoBasePlate(!msg.value()); // Inverted
-                    case "stand" -> armorStand.setInvisible(!msg.value());
+                    case "Locked" -> ArmorStandData.lockArmorStand(armorStand, player.getUUID(), msg.value());
+                    case "Invisible" -> armorStand.setInvisible(msg.value());
+                    case "ShowArms" -> armorStand.setShowArms(msg.value());
+                    case "NoBasePlate" -> armorStand.setNoBasePlate(msg.value());
+                    case "Small" -> ArmorStandData.setSmall(armorStand, msg.value());
                 }
             }
         });

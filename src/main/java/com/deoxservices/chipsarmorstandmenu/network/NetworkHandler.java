@@ -16,11 +16,13 @@ public class NetworkHandler {
             OpenArmorStandServerPacket.OPEN_STREAM_CODEC,
             new DirectionalPayloadHandler<>(OpenArmorStandServerPacket::clientHandle, OpenArmorStandServerPacket::serverHandle)
         );
-        /*registrar.playToClient(
+        /* Saved for future client to server syncing
+        registrar.playToClient(
             OpenArmorStandClientPacket.TYPE,
             OpenArmorStandClientPacket.OPEN_STREAM_CODEC,
             new DirectionalPayloadHandler<>(OpenArmorStandClientPacket::clientHandle, OpenArmorStandClientPacket::serverHandle)
-        );*/
+        );
+        */
         registrar.playToServer(
             ToggleArmorStandPacket.TYPE,
             ToggleArmorStandPacket.TOGGLE_STREAM_CODEC,

@@ -1,3 +1,9 @@
+## `[Unreleased]` <sub>04/05/2025 19:04</sub>
+
+- **Note**: Early debug build—pushed to GitHub for troubleshooting. Not ready for use. Expect bugs, especially with ArmorStandMenu.
+- Added rendering of player and armor stand mini
+- Switched data storage from custom ChipsArmorStandMenu.dat to attaching data directly to entity NBT
+
 ## `[Unreleased]` <sub>04/05/2025 18:16</sub>
 
 - **Note**: Early debug build—pushed to GitHub for troubleshooting. Not ready for use. Expect bugs, especially with ArmorStandMenu.

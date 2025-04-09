@@ -20,6 +20,7 @@ public class ClientConfig {
 
     public static class Config {
         public final ModConfigSpec.EnumValue<ModifierKey> ARMOR_STAND_MENU_MODIFIER;
+        //public final ModConfigSpec.ConfigValue<Boolean> DEBUG;
         public final ModConfigSpec.ConfigValue<List<? extends String>> CURIOS_ITEMS;
 
         Config(ModConfigSpec.Builder builder) {
@@ -28,6 +29,10 @@ public class ClientConfig {
                 .comment("Modifier key to open the Armor Stand menu with the Use key (Default: Right Click). Default: SHIFT")
                 .translation("gui.chipsarmorstandmenu.config.ARMOR_STAND_MENU_MODIFIER")
                 .defineEnum("ARMOR_STAND_MENU_MODIFIER", ModifierKey.SHIFT);
+            /*DEBUG = builder
+                .comment("Enable debugging. Default: false")
+                .translation("gui.chipsarmorstandmenu.config.DEBUG")
+                .define("DEBUG", true);*/
             builder.pop(); // End the section
 
             builder.push("curios"); // Start Section

@@ -1,12 +1,15 @@
 package com.deoxservices.chipsarmorstandmenu.menu;
 
+import java.util.UUID;
+
 import javax.annotation.Nullable;
 
 import com.deoxservices.chipsarmorstandmenu.ChipsArmorStandMenu;
-import com.deoxservices.chipsarmorstandmenu.client.ClientProxyGameEvents;
+import com.deoxservices.chipsarmorstandmenu.data.ArmorStandData;
 import com.deoxservices.chipsarmorstandmenu.utils.Utils;
 import com.mojang.datafixers.util.Pair;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
@@ -24,14 +27,16 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
 public class ArmorStandMenu extends AbstractContainerMenu {
 
+    private final Player player;
+    private int entityId = -1;
     private ArmorStand armorStand;
-    private final Player player; // Add player field
-    private final int entityId; // Store for later lookup
-    private final boolean showArms;
-    @SuppressWarnings("unused")
-    private final boolean ownerOnly;
-    private boolean showStand = true; // Default on
-    private boolean showBase = true;  // Default on
+    private UUID owner = null;
+    private boolean inUse = false;
+    private boolean locked = false;
+    private boolean invisible = false;
+    private boolean showArms = false;
+    private boolean noBasePlate = false;
+    private boolean isSmall = false;
     public int ticksSinceInteraction = 0;
     private static final ResourceLocation EMPTY_HELMET = ResourceLocation.withDefaultNamespace("item/empty_armor_slot_helmet");
     private static final ResourceLocation EMPTY_CHESTPLATE = ResourceLocation.withDefaultNamespace("item/empty_armor_slot_chestplate");
@@ -40,43 +45,43 @@ public class ArmorStandMenu extends AbstractContainerMenu {
     private static final ResourceLocation EMPTY_SHIELD = ResourceLocation.withDefaultNamespace("item/empty_armor_slot_shield");
     private static final ResourceLocation EMPTY_SWORD = ResourceLocation.withDefaultNamespace("item/empty_slot_sword");
 
-    public ArmorStandMenu(int id, Inventory playerInv, ArmorStand armorStand, boolean showArms, boolean ownerOnly, RegistryFriendlyByteBuf extraData) {
+    public ArmorStandMenu(int id, Inventory playerInv, ArmorStand armorStand, RegistryFriendlyByteBuf clientData) {
         super(ChipsArmorStandMenu.ARMOR_STAND_MENU.get(), id);
         this.player = playerInv.player;
-        if (player.level().isClientSide() && extraData!=null) {
-            // Client-side: Read from packet
-            this.entityId = extraData.readInt();
-            this.showArms = extraData.readBoolean();
-            this.ownerOnly = extraData.readBoolean();
+        if (!player.level().isClientSide() && clientData==null) {  // Server-side: Use ArmorStand directly
+            this.entityId = armorStand.getId();
+            this.armorStand = armorStand;
+            this.owner = armorStand.getData(ChipsArmorStandMenu.ARMOR_STAND_DATA.get()).getOwner();
+            this.inUse = armorStand.getData(ChipsArmorStandMenu.ARMOR_STAND_DATA.get()).isInUse();
+            this.locked = armorStand.getData(ChipsArmorStandMenu.ARMOR_STAND_DATA.get()).isLocked();
+            this.invisible = armorStand.isInvisible();
+            this.showArms = armorStand.isShowArms();
+            this.noBasePlate = armorStand.isNoBasePlate();
+            this.isSmall = armorStand.isSmall();
+            Utils.logMsg("Server Initialized ArmorStandMenu ID: "+ id +" |  ArmorStandId: " + this.entityId + ", Owner:  " + this.owner + ", InUse: " + this.inUse + ", Locked:  " + this.locked + ", Invisible:  " + this.invisible + ", ShowArms: " + this.showArms + ", NoBasePlate: " + this.noBasePlate + "Small: " + this.isSmall, "debug");
+            initSlots(playerInv, "server");
+        } else if (player.level().isClientSide() && clientData!=null) {  // Client-side: Read from packet
+            this.entityId = clientData.readInt();
             this.armorStand = null; // Lazy load in initSlots or broadcastChanges
+            this.owner = clientData.readUUID();
+            this.inUse = clientData.readBoolean();
+            this.locked = clientData.readBoolean();
+            this.invisible = clientData.readBoolean();
+            this.showArms = clientData.readBoolean();
+            this.noBasePlate = clientData.readBoolean();
+            this.isSmall = clientData.readBoolean();
             if (player.level().getEntity(entityId) instanceof ArmorStand as)
             {
-                this.armorStand = as; // Lazy load in initSlots or broadcastChanges
+                this.armorStand = as;
             }
-            Utils.logMsg("Client Initialized ArmorStandMenu ID: "+ id +" | ArmorStandId: " + entityId + ", showArms: " + showArms + ", ownerOnly: " + ownerOnly, "debug");
-            initSlots(playerInv);
-        } else if (!player.level().isClientSide()) {
-            // Server-side: Use ArmorStand directly
-            this.armorStand = armorStand;
-            this.showArms = showArms;
-            this.ownerOnly = ownerOnly;
-            this.entityId = armorStand != null ? armorStand.getId() : -1;
-            if (armorStand!=null) {
-                this.showStand = !armorStand.isInvisible();
-                this.showBase = armorStand.isNoBasePlate();
-            }
-            Utils.logMsg("Server Initialized ArmorStandMenu ID: "+ id +" |  ArmorStandId: " + entityId + ", showArms: " + showArms + ", ownerOnly: " + ownerOnly, "debug");
-            initSlots(playerInv);
+            Utils.logMsg("Client Initialized ArmorStandMenu ID: "+ id +" |  ArmorStandId: " + entityId + ", Owner:  " + this.owner + ", InUse: " + this.inUse + ", Locked:  " + this.locked + ", Invisible:  " + this.invisible + ", ShowArms: " + this.showArms + ", NoBasePlate: " + this.noBasePlate + "Small: " + this.isSmall, "debug");
+            initSlots(playerInv, "client");
         } else {
-            this.ownerOnly = true;
-            this.showArms = true;
-            this.entityId = -1;
-            Utils.logMsg("Armor Stand Menu is neither Client nor Server or extraData is null. How did you get here?", "debug");
+            Utils.logMsg("Could not determine client or server side Armor Stand Menu. This is a bug. Report to mod developer.", "warn");
         }
     }
-
-    private void initSlots(Inventory playerInv) {
-        Utils.logMsg("Attempting to add slots for armorStand: " + (armorStand != null ? armorStand.getId() : "null"), "debug");
+    private void initSlots(Inventory playerInv, String side) {
+        Utils.logMsg((side=="server" ? "Server" : "Client") + " attempting to add slots for armorStand: " + (armorStand != null ? armorStand.getId() : "null"), "debug");
         if (armorStand!=null)
         {
             // Armor Stand Armor Slots
@@ -85,8 +90,8 @@ public class ArmorStandMenu extends AbstractContainerMenu {
             this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.LEGS, 2, 231, 51, EMPTY_LEGGINGS));
             this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.FEET, 3, 231, 69, EMPTY_BOOTS));
             if (showArms) {
-                this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.MAINHAND, 4, 180, 90, EMPTY_SWORD)); // Armor Stand Right Hand
-                this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.OFFHAND, 5, 213, 90, EMPTY_SHIELD)); // Armor Stand Left Hand
+                this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.MAINHAND, 4, 180, 91, EMPTY_SWORD)); // Armor Stand Right Hand
+                this.addSlot(new SlotArmorStand(this, armorStand, EquipmentSlot.OFFHAND, 5, 213, 91, EMPTY_SHIELD)); // Armor Stand Left Hand
             }
             // Player inventory (27 slots)
             for (int row = 0; row < 3; row++) {
@@ -104,7 +109,7 @@ public class ArmorStandMenu extends AbstractContainerMenu {
             this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.LEGS, 37, 8, 51, EMPTY_LEGGINGS)); // Player Leggings
             this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.FEET, 36, 8, 69, EMPTY_BOOTS)); // Player Boots
             this.addSlot(new ArmorSlot(playerInv, playerInv.player, EquipmentSlot.OFFHAND, 40, 77, 69, EMPTY_SHIELD)); // Player offhand
-            Utils.logMsg("Added slots for armorStand: " + (armorStand != null ? armorStand.getId() : "null"), "debug");
+            Utils.logMsg((side=="server" ? "Server" : "Client") + " added slots for armorStand: " + (armorStand != null ? armorStand.getId() : "null"), "debug");
         }
     }
 
@@ -157,8 +162,9 @@ public class ArmorStandMenu extends AbstractContainerMenu {
     @Override
     public void removed(Player player) {
         super.removed(player);
+        Minecraft mc = Minecraft.getInstance();
         if (armorStand != null && !player.level().isClientSide()) {
-            ClientProxyGameEvents.unlockArmorStand(armorStand.getId());
+            ArmorStandData.setArmorStandInUse(armorStand, mc.player.getUUID(), false);
         }
     }
 
@@ -188,24 +194,6 @@ public class ArmorStandMenu extends AbstractContainerMenu {
     }
 
     public ArmorStand getArmorStand() { return armorStand; }
-
-    public boolean getShowArms() { return showArms; }
-
-    public void setShowArms(boolean value) { if (armorStand != null) armorStand.setShowArms(value); }
-
-    public boolean getShowBase() { return showBase; }
-
-    public void setShowBase(boolean value) {
-        this.showBase = value;
-        if (armorStand != null) armorStand.setNoBasePlate(!value); // Inverted
-    }
-
-    public boolean getShowStand() { return showStand; }
-
-    public void setShowStand(boolean value) {
-        this.showStand = value;
-        if (armorStand != null) armorStand.setInvisible(!value);
-    }
 
     // Nested slot class
     public class ArmorSlot extends Slot {

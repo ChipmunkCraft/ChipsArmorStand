@@ -1,6 +1,8 @@
 package com.deoxservices.chipsarmorstandmenu.network;
 
-import com.deoxservices.chipsarmorstandmenu.client.ClientProxyGameEvents;
+import java.util.UUID;
+
+import com.deoxservices.chipsarmorstandmenu.data.ArmorStandData;
 import com.deoxservices.chipsarmorstandmenu.menu.ArmorStandMenu;
 import com.deoxservices.chipsarmorstandmenu.utils.Constants;
 import com.deoxservices.chipsarmorstandmenu.utils.Utils;
@@ -19,10 +21,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record OpenArmorStandServerPacket(int entityId, boolean showArms, boolean ownerOnly) implements CustomPacketPayload {
+public record OpenArmorStandServerPacket(int entityId, UUID owner, boolean inUse, boolean locked, boolean invisible, boolean showArms, boolean noBasePlate, boolean isSmall) implements CustomPacketPayload {
 
     public OpenArmorStandServerPacket(RegistryFriendlyByteBuf buf) {
-        this(buf.readInt(), buf.readBoolean(), buf.readBoolean());
+        this(buf.readInt(), buf.readUUID(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean());
     }
 
     public static final Type<OpenArmorStandServerPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "open_armor_stand_menu_server"));
@@ -31,8 +33,13 @@ public record OpenArmorStandServerPacket(int entityId, boolean showArms, boolean
         StreamCodec.of(
             (buf, packet) -> {
                 buf.writeInt(packet.entityId());
-                buf.writeBoolean(packet.ownerOnly());
+                buf.writeUUID(packet.owner());
+                buf.writeBoolean(packet.inUse());
+                buf.writeBoolean(packet.locked());
+                buf.writeBoolean(packet.invisible());
                 buf.writeBoolean(packet.showArms());
+                buf.writeBoolean(packet.noBasePlate());
+                buf.writeBoolean(packet.isSmall());
             },
             OpenArmorStandServerPacket::new
         );
@@ -47,13 +54,12 @@ public record OpenArmorStandServerPacket(int entityId, boolean showArms, boolean
             ServerPlayer player = (ServerPlayer) ctx.player();
             Entity entity = player.level().getEntity(msg.entityId());
             if (entity instanceof ArmorStand armorStand) {
-                if (ClientProxyGameEvents.isArmorStandLocked(msg.entityId(), player.getUUID())) {
-                    Utils.logMsg("Armor stand ID " + msg.entityId() + " is locked, denying player: " + player.getUUID(), "debug");
+                if (ArmorStandData.isArmorStandLocked(armorStand, player.getUUID())) {
+                    Utils.logMsg("Armor stand UUID " + armorStand.getUUID() + " is locked, denying player: " + player.getUUID(), "debug");
                     return;
                 }
-
-                if (ClientProxyGameEvents.lockArmorStand(msg.entityId(), player.getUUID(), msg.ownerOnly())) {
-                    Utils.logMsg("Server received packet, opening menu for armor stand ID: " + msg.entityId(), "debug");
+                if (ArmorStandData.setArmorStandInUse(armorStand, player.getUUID(), true)) {
+                    Utils.logMsg("Server received packet, opening menu for armor stand UUID: " + armorStand.getUUID(), "debug");
                     player.openMenu(new MenuProvider() {
                         @Override
                         public Component getDisplayName() {
@@ -64,12 +70,17 @@ public record OpenArmorStandServerPacket(int entityId, boolean showArms, boolean
                         @Override
                         public AbstractContainerMenu createMenu(int id, Inventory inv, Player p) {
                             Utils.logMsg("Creating Server ArmorStandMenu with ID: " + id + " | Entity ID: " + armorStand.getId(), "debug");
-                            return new ArmorStandMenu(id, inv, armorStand, msg.showArms(), msg.ownerOnly(), null);
+                            return new ArmorStandMenu(id, inv, armorStand, null);
                         }
                     }, buf -> {
                         buf.writeInt(msg.entityId());
+                        buf.writeUUID(msg.owner());
+                        buf.writeBoolean(msg.inUse());
+                        buf.writeBoolean(msg.locked());
+                        buf.writeBoolean(msg.invisible());
                         buf.writeBoolean(msg.showArms());
-                        buf.writeBoolean(msg.ownerOnly());
+                        buf.writeBoolean(msg.noBasePlate());
+                        buf.writeBoolean(msg.isSmall());
                     });
                 }
             } else {

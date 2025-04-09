@@ -1,5 +1,7 @@
 package com.deoxservices.chipsarmorstandmenu.network;
 
+import java.util.UUID;
+
 import com.deoxservices.chipsarmorstandmenu.utils.Constants;
 import com.deoxservices.chipsarmorstandmenu.utils.Utils;
 
@@ -11,10 +13,10 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record OpenArmorStandClientPacket(int entityId, boolean showArms, boolean ownerOnly) implements CustomPacketPayload {
+public record OpenArmorStandClientPacket(int entityId, UUID owner, boolean inUse, boolean locked, boolean invisible, boolean showArms, boolean noBasePlate) implements CustomPacketPayload {
 
     public OpenArmorStandClientPacket(RegistryFriendlyByteBuf buf) {
-        this(buf.readInt(), buf.readBoolean(), buf.readBoolean());
+        this(buf.readInt(), buf.readUUID(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean());
     }
 
     public static final Type<OpenArmorStandClientPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "open_armor_stand_menu_client"));
@@ -23,8 +25,12 @@ public record OpenArmorStandClientPacket(int entityId, boolean showArms, boolean
         StreamCodec.of(
             (buf, packet) -> {
                 buf.writeInt(packet.entityId());
-                buf.writeBoolean(packet.ownerOnly());
+                buf.writeUUID(packet.owner());
+                buf.writeBoolean(packet.inUse());
+                buf.writeBoolean(packet.locked());
+                buf.writeBoolean(packet.invisible());
                 buf.writeBoolean(packet.showArms());
+                buf.writeBoolean(packet.noBasePlate());
             },
             OpenArmorStandClientPacket::new
         );
@@ -41,8 +47,12 @@ public record OpenArmorStandClientPacket(int entityId, boolean showArms, boolean
             @SuppressWarnings("null")
             RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), mc.level.registryAccess(), null);
             buf.writeInt(msg.entityId());
+            buf.writeUUID(msg.owner());
+            buf.writeBoolean(msg.inUse());
+            buf.writeBoolean(msg.locked());
+            buf.writeBoolean(msg.invisible());
             buf.writeBoolean(msg.showArms());
-            buf.writeBoolean(msg.ownerOnly());
+            buf.writeBoolean(msg.noBasePlate());
             Utils.logMsg("Buf check: " + buf.readableBytes(), "debug");
         });
     }
