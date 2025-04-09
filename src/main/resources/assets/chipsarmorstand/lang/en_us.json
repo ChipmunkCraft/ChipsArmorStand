@@ -1,0 +1,17 @@
+{
+  "gui.chipsarmorstand.config.ARMOR_STAND_MENU_MODIFIER.name": "ArmorStand Open Menu Use Key Modifier",
+  "gui.chipsarmorstand.config.ARMOR_STAND_MENU_MODIFIER.description": "Modifier key to open the Armor Stand menu with the Use key (Default: Right Click). Default: SHIFT",
+  "gui.chipsarmorstand.config.DEBUG.name": "Debug Mode",
+  "gui.chipsarmorstand.config.DEBUG.description": "Enable debugging. Default: false",
+  "gui.chipsarmorstand.config.TIMEOUT_SECONDS.name": "Armor Stand Menu Timeout",
+  "gui.chipsarmorstand.config.TIMEOUT_SECONDS.description": "Armor Stand Menu Timeout in seconds. Default: 30 seconds",
+  "gui.chipsarmorstand.config.CURIOS_ITEMS.name": "Curio Item List",
+  "gui.chipsarmorstand.config.CURIOS_ITEMS.description": "List of items to add as curios.",
+  "gui.chipsarmorstand.invisible": "Invisible",
+  "gui.chipsarmorstand.show_arms": "Show Arms",
+  "gui.chipsarmorstand.no_base": "No Base",
+  "gui.chipsarmorstand.is_small": "Is Small",
+  "gui.chipsarmorstand.locked": "Locked",
+  "gui.chipsarmorstand.stand_hot_bar": "Armor Stand Hot Bar",
+  "gui.chipsarmorstand.player_hot_bar": "Player Hot Bar"
+}

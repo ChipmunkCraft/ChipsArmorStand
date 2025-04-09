@@ -7,31 +7,31 @@ modId="${mod_id}"
 version="${mod_version}"
 displayName="${mod_name}"
 displayURL="${mod_display_url}"
-logoFile="chipsarmorstandmenu.png"
+logoFile="chipsarmorstand.png"
 authors="${mod_authors}"
 description='''${mod_description}'''
-[[dependencies.chipsarmorstandmenu]]
+[[dependencies.chipsarmorstand]]
     modId="neoforge"
     type="required"
     versionRange = "${neoforge_version_range}"
     ordering="NONE"
     side="BOTH"
 # Here's another dependency
-[[dependencies.chipsarmorstandmenu]]
+[[dependencies.chipsarmorstand]]
     modId="minecraft"
     type="required"
     versionRange = "${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
 # Curios Dependency
-[[dependencies.chipsarmorstandmenu]]
+[[dependencies.chipsarmorstand]]
     modId="curios"
     type="required"
     versionRange = "[${curios_version},)"
     ordering="NONE"
     side="BOTH"
 # Ryoamic Dependency
-[[dependencies.chipsarmorstandmenu]]
+[[dependencies.chipsarmorstand]]
     modId="ryoamiclights"
     type="required"
     versionRange = "[${ryoamiclights_version},)"

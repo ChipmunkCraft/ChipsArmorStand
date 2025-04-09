@@ -46,7 +46,7 @@ neoForge {
     runs {
         client {
             client()
-            programArguments.addAll '--width=1280', '--height=720'
+            programArguments.addAll '--width=1280', '--height=720' // Seriously, who runs 1024x768 these days?
             jvmArguments.add('-Ddevauth.enabled=true')
             jvmArguments.add('-Ddevauth.configDir=C:/Users/deoxd/.devauth')
             jvmArguments.add('-Ddevauth.account=main')

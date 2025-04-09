@@ -2,7 +2,8 @@
 
 - **Note**: Early debug build—pushed to GitHub for troubleshooting. Not ready for use. Expect bugs, especially with ArmorStandMenu.
 - Added rendering of player and armor stand mini
-- Switched data storage from custom ChipsArmorStandMenu.dat to attaching data directly to entity NBT
+- Switched data storage from custom ChipsArmorStand.dat to attaching data directly to entity NBT
+- Renamed mod from Chips Armor Stand Menu to Chips Armor Stand
 
 ## `[Unreleased]` <sub>04/05/2025 18:16</sub>
 
